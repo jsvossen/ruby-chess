@@ -2,20 +2,26 @@ class ChessBoard
 
 	attr_reader :squares
 
+	CHAR_RANGE = ("a".."h").to_a
+	BOARD_SIZE = 8
+
 	def initialize
 		@squares = {}
-		8.times do |x|
-			8.times do |y|
-				@squares["s#{x+1}#{y+1}"] = Square.new(x+1,y+1)
+		BOARD_SIZE.times do |x|
+			char = CHAR_RANGE[x]
+			BOARD_SIZE.times do |y|
+				label = "#{char}#{y+1}".to_sym
+				@squares[label] = Square.new(x+1,y+1)
 			end
 		end
 	end
 
 	def square(x,y)
-		@squares["s#{x}#{y}"]
+		char = CHAR_RANGE[x-1]
+		@squares["#{char}#{y}".to_sym]
 	end
 
-	def draw_board
+	def draw
 		puts "    a   b   c   d   e   f   g   h"
 		puts "  |-------------------------------|"
 		puts "8 | #{square(1,8).mark} | #{square(2,8).mark} | #{square(3,8).mark} | #{square(4,8).mark} | #{square(4,8).mark} | #{square(5,8).mark} | #{square(6,8).mark} | #{square(7,8).mark} | 8"
