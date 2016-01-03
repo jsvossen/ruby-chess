@@ -1,0 +1,1 @@
+requre_relative "spec_helper"
