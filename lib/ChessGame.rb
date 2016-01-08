@@ -1,12 +1,14 @@
 require "./lib/ChessBoard"
 require "./lib/ChessPiece"
 require "./lib/ChessPlayer"
+require "./lib/Help"
+include Help
 
 class ChessGame
 
 	attr_reader :board, :players, :white_set, :black_set
 
-	def initialize(player1="White",player2="Black")
+	def initialize(player1="Player 1",player2="Player 2")
 
 		@player = [ChessPlayer.new(player1,:white), ChessPlayer.new(player2,:black)]
 		@board = ChessBoard.new
@@ -35,7 +37,15 @@ class ChessGame
 		@player[1].set = @black_set
 
 		reset_board
+		board.draw
 
+		gameover = false
+		@active = @player[0]
+
+		until gameover do
+			input = Readline.readline("#{@active.name}: ")
+			handle_input(input)
+		end
 	end
 
 	def reset_board
@@ -79,4 +89,24 @@ class ChessGame
 
 	end
 
+	def handle_input(input)
+		case input.downcase
+			when "save" || /^save\s\w+$/
+				#save
+			when /^[pkqrnb][a-h]?[1-8]?x?[a-h][1-8]/
+				#process move
+			when "resign"
+				#player resigns
+			when "help"
+				Help.help
+				@board.draw
+			when "quit" || "exit"
+				puts "Goodbye!"
+				exit
+			else
+				puts "Invalid input. Enter [help] for commands."
+				input = Readline.readline("#{@active.name}: ")
+				handle_input(input)
+		end
+	end
 end
