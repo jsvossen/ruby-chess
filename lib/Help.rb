@@ -45,6 +45,7 @@ module Help
 		puts "***Misc Commands***"
 		puts "[save] save over most recent saved game"
 		puts "[save <name>] create new save or overwrites <name> if it exists"
+		puts "[show saves] list existing save files"
 		puts "[resign] concede the game"
 		puts "[help] show help menu"
 		puts "[quit] or [exit] exit game; abandon unsaved progress"

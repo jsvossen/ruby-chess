@@ -1,6 +1,8 @@
 require "./lib/ChessBoard"
 require "./lib/ChessPiece"
 require "./lib/ChessPlayer"
+require "./lib/FileManager"
+include FileManager
 require "./lib/Help"
 include Help
 
@@ -91,8 +93,13 @@ class ChessGame
 
 	def handle_input(input)
 		case input.downcase
-			when "save" || /^save\s\w+$/
-				#save
+			when "save", /^save\s\w+$/
+				file = input.split[1]
+				FileManager.save_game(self,file)
+			when "show saves"
+				puts "***Saved Games***"
+				FileManager.list_saves
+				puts "***End***"
 			when /^[pkqrnb][a-h]?[1-8]?x?[a-h][1-8]/
 				#process move
 			when "resign"
@@ -100,7 +107,7 @@ class ChessGame
 			when "help"
 				Help.help
 				@board.draw
-			when "quit" || "exit"
+			when "quit", "exit"
 				puts "Goodbye!"
 				exit
 			else
