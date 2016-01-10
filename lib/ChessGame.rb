@@ -41,10 +41,11 @@ class ChessGame
 		reset_board
 		board.draw
 
-		gameover = false
+		@gameover = false
+		@winner = nil
 		@active = @player[0]
 
-		until gameover do
+		until @gameover do
 			input = Readline.readline("#{@active.name}: ")
 			handle_input(input)
 		end
@@ -103,7 +104,7 @@ class ChessGame
 			when /^[pkqrnb][a-h]?[1-8]?x?[a-h][1-8]/
 				#process move
 			when "resign"
-				#player resigns
+				resign(@active)
 			when "help"
 				Help.help
 				@board.draw
@@ -116,4 +117,12 @@ class ChessGame
 				handle_input(input)
 		end
 	end
+
+	def resign(player)
+		@winner = @player.select { |p| p != player }.shift
+		@gameover = true
+		puts "#{player.name} has resigned!"
+		puts "#{@winner.name} wins!"
+	end
+
 end
