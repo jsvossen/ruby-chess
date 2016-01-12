@@ -45,17 +45,17 @@ class ChessGame
 		@winner = nil
 		@active = @player[0]
 
-		until @gameover do
-			input = Readline.readline("#{@active.name}: ")
-			handle_input(input)
-		end
+		# until @gameover do
+		# 	input = Readline.readline("#{@active.name}: ")
+		# 	handle_input(input)
+		# end
 	end
 
 	def reset_board
 
 		#sort sets alphabecially
-		@white_set.sort_by! { |piece| piece.name }
-		@black_set.sort_by! { |piece| piece.name }
+		@white_set.sort_by! { |piece| piece.class.to_s }
+		@black_set.sort_by! { |piece| piece.class.to_s }
 
 		#bishops
 		@white_set[0].coord = @board.square(3,1)
@@ -87,8 +87,8 @@ class ChessGame
 		@black_set[14].coord = @board.square(1,8)
 		@black_set[15].coord = @board.square(8,8)
 
-		@white_set.each { |piece| piece.captured = false }
-		@black_set.each { |piece| piece.captured = false }
+		@white_set.each { |piece| piece.captured = false; get_moves(piece); }
+		@black_set.each { |piece| piece.captured = false; get_moves(piece); }
 
 	end
 
@@ -123,6 +123,77 @@ class ChessGame
 		@gameover = true
 		puts "#{player.name} has resigned!"
 		puts "#{@winner.name} wins!"
+	end
+
+	def get_moves(piece)
+		piece.moves = []
+
+		if (piece.name == "P")
+			case piece.color
+				when :white
+					next_sq = [piece.coord.x, piece.coord.y+2]
+					piece.moves << next_sq if piece.coord.y == 2 && !@board.square(next_sq[0],next_sq[1]).occupant
+					next_sq = [piece.coord.x, piece.coord.y+1]
+					piece.moves << next_sq if next_sq[1] <= 8 && !@board.square(next_sq[0],next_sq[1]).occupant
+				when :black
+					next_sq = [piece.coord.x, piece.coord.y-2]
+					piece.moves << next_sq if piece.coord.y == 7 && !@board.square(next_sq[0],next_sq[1]).occupant
+					next_sq = [piece.coord.x, piece.coord.y-1]
+					piece.moves << next_sq if next_sq[1] > 0 && !@board.square(next_sq[0],next_sq[1]).occupant
+			end
+			next_sq = [piece.coord.x+1, piece.coord.y]
+			piece.moves << next_sq if next_sq[0] <= 8 && @board.square(next_sq[0],next_sq[1]).occupant && @board.square(next_sq[0],next_sq[1]).occupant.color != piece.color
+			next_sq = [piece.coord.x-1, piece.coord.y]
+			piece.moves << next_sq if next_sq[0] > 0 && @board.square(next_sq[0],next_sq[1]).occupant && @board.square(next_sq[0],next_sq[1]).occupant.color != piece.color
+		
+		elsif (piece.name == "N")
+			next_sq = [
+				[piece.coord.x-3, piece.coord.y+1],
+				[piece.coord.x-1, piece.coord.y+3],
+				[piece.coord.x+1, piece.coord.y+3],
+				[piece.coord.x+3, piece.coord.y+1],
+				[piece.coord.x+3, piece.coord.y-1],
+				[piece.coord.x+1, piece.coord.y-3],
+				[piece.coord.x-3, piece.coord.y-1],
+				[piece.coord.x-1, piece.coord.y-3]
+			]
+			next_sq.each { |sq| piece.moves << sq if @board.square(sq[0],sq[1]) && !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color) }				
+
+		elsif (piece.name == "K")
+			next_sq = [
+				[piece.coord.x+1, piece.coord.y],
+				[piece.coord.x-1, piece.coord.y],
+				[piece.coord.x, piece.coord.y+1],
+				[piece.coord.x, piece.coord.y-1],
+				[piece.coord.x+1, piece.coord.y+1],
+				[piece.coord.x-1, piece.coord.y-1],
+				[piece.coord.x+1, piece.coord.y-1],
+				[piece.coord.x-1, piece.coord.y+1]
+			]
+			next_sq.each { |sq| piece.moves << sq if @board.square(sq[0],sq[1]) && !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color) }				
+		end
+
+	end
+
+	def decode_move(input)
+		input = input.tr("x","").split(//)
+		move = {}
+		move[:piece] = input.shift
+		move[:x1] = nil
+		move[:y1] = nil
+		if ( input.length == 4 )
+			move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+			move[:y1] = input.shift.to_i
+		elsif ( input.length == 3 )
+			if input[0].to_i > 0
+				move[:y1] = input.shift.to_i
+			else
+				move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+			end
+		end
+		move[:x2] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+		move[:y2] = input.shift.to_i
+		move
 	end
 
 end
