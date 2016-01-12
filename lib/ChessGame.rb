@@ -148,14 +148,14 @@ class ChessGame
 		
 		elsif (piece.name == "N")
 			next_sq = [
-				[piece.coord.x-3, piece.coord.y+1],
-				[piece.coord.x-1, piece.coord.y+3],
-				[piece.coord.x+1, piece.coord.y+3],
-				[piece.coord.x+3, piece.coord.y+1],
-				[piece.coord.x+3, piece.coord.y-1],
-				[piece.coord.x+1, piece.coord.y-3],
-				[piece.coord.x-3, piece.coord.y-1],
-				[piece.coord.x-1, piece.coord.y-3]
+				[piece.coord.x-2, piece.coord.y+1],
+				[piece.coord.x-1, piece.coord.y+2],
+				[piece.coord.x+1, piece.coord.y+2],
+				[piece.coord.x+2, piece.coord.y+1],
+				[piece.coord.x+2, piece.coord.y-1],
+				[piece.coord.x+1, piece.coord.y-2],
+				[piece.coord.x-2, piece.coord.y-1],
+				[piece.coord.x-1, piece.coord.y-2]
 			]
 			next_sq.each { |sq| piece.moves << sq if @board.square(sq[0],sq[1]) && !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color) }				
 
@@ -194,6 +194,28 @@ class ChessGame
 		move[:x2] = ChessBoard::CHAR_RANGE.index(input.shift)+1
 		move[:y2] = input.shift.to_i
 		move
+	end
+
+	def move(piece,x2,y2,x1=nil,y1=nil)
+		movable = @active.set.select { |p| p.name == piece && p.moves.include?([x2,y2]) }
+		movable.select! { |p| p.coord.x == x1 } if x1
+		movable.select! { |p| p.coord.y == y1 } if y1
+		puts movable
+		if ( movable.size > 1 )
+			puts "Ambiguous command! Multiple pieces can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
+			return false
+		elsif (movable.size == 0 )
+			puts "Illegal move!"
+			return false
+		else
+			movable[0].coord = nil
+			if (@board.square(x2,y2).occupant)
+				@board.square(x2,y2).occupant.captured = true
+				@board.square(x2,y2).occupant = nil
+			end
+			movable[0].coord = @board.square(x2,y2)
+			get_moves(movable[0])
+		end
 	end
 
 end

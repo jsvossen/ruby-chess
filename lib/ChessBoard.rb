@@ -17,7 +17,7 @@ class ChessBoard
 	end
 
 	def square(x,y)
-		char = CHAR_RANGE[x-1]
+		char = CHAR_RANGE[x.to_i-1]
 		@squares["#{char}#{y}".to_sym]
 	end
 
@@ -59,7 +59,9 @@ class ChessBoard
 		end
 
 		def occupant= piece
+			prev = @occupant
 			@occupant = piece
+			prev.coord = nil if prev!=nil && !piece
 			piece.coord = self if piece && piece.coord != self
 		end
 

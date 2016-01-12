@@ -13,8 +13,10 @@ class ChessPiece
 	end
 
 	def coord= coord
+		prev = @coord
 		@coord = coord
-		coord.occupant = self if coord && coord.occupant != self
+		prev.occupant = nil if prev!=nil && !coord
+		@coord.occupant = self if @coord && @coord.occupant != self
 	end
 
 end
