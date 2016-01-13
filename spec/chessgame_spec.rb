@@ -16,6 +16,7 @@ describe ChessGame do
 	wking = "\u2654".encode('utf-8')
 	bking = "\u265A".encode('utf-8')
 
+
 	describe "#new" do
 		
 		it "creates a chess board with pieces" do
@@ -42,6 +43,7 @@ describe ChessGame do
 		end
 
 	end
+
 
 	describe "#move" do
 		
@@ -113,6 +115,47 @@ describe ChessGame do
 				expect(p1.coord).to eq game.board.square(2,4)
 				expect(game.board.square(2,4).occupant).to eq p1
 				expect(game.board.square(3,5).occupant).to eq p2
+			end
+		end
+
+	end
+
+
+	describe "#get_moves" do
+		
+		context "pawn" do
+			before(:each) { @p1 = game.board.square(1,2).occupant }
+
+			it "can move forward one or two spaces from home row" do
+				expect(@p1.moves).to eq [[1,4],[1,3]]
+			end
+			it "can only move forward one space outside of home row" do
+				game.move("P",1,4)
+				game.get_moves(@p1)
+				expect(@p1.moves).to eq [[1,5]]
+			end
+			it "can capture opponent piece on forward diagonals" do
+				game.move("P",1,4)
+				game.active = game.players[1]
+				game.move("P",2,5)
+				game.get_moves(@p1)
+				expect(@p1.moves.include? [2,5]).to eq true					
+			end
+			it "cannot jump pieces" do
+				game.move("N",1,3)
+				game.get_moves(@p1)
+				expect(@p1.moves.include? [1,4]).to eq false
+			end
+			it "cannot move forward on top of another piece" do
+				game.move("N",1,3)
+				game.get_moves(@p1)
+				expect(@p1.moves.include? [1,3]).to eq false
+			end
+			it "cannot move off of board" do
+				game.board.square(1,2).occupant, game.board.square(1,8).occupant = nil
+				@p1.coord = game.board.square(1,8)
+				game.get_moves(@p1)
+				expect(@p1.moves).to eq []
 			end
 		end
 
