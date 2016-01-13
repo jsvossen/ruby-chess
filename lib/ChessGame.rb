@@ -8,11 +8,12 @@ include Help
 
 class ChessGame
 
+	attr_writer :active
 	attr_reader :board, :players, :white_set, :black_set
 
 	def initialize(player1="Player 1",player2="Player 2")
 
-		@player = [ChessPlayer.new(player1,:white), ChessPlayer.new(player2,:black)]
+		@players = [ChessPlayer.new(player1,:white), ChessPlayer.new(player2,:black)]
 		@board = ChessBoard.new
 
 		@white_set = []
@@ -35,15 +36,15 @@ class ChessGame
 		@black_set << Queen.new("Q",:black)
 		@black_set << King.new("K",:black)
 
-		@player[0].set = @white_set
-		@player[1].set = @black_set
+		@players[0].set = @white_set
+		@players[1].set = @black_set
 
 		reset_board
-		board.draw
+		#board.draw
 
 		@gameover = false
 		@winner = nil
-		@active = @player[0]
+		@active = @players[0]
 
 		# until @gameover do
 		# 	input = Readline.readline("#{@active.name}: ")
@@ -119,7 +120,7 @@ class ChessGame
 	end
 
 	def resign(player)
-		@winner = @player.select { |p| p != player }.shift
+		@winner = @players.select { |p| p != player }.shift
 		@gameover = true
 		puts "#{player.name} has resigned!"
 		puts "#{@winner.name} wins!"
@@ -132,20 +133,22 @@ class ChessGame
 			case piece.color
 				when :white
 					next_sq = [piece.coord.x, piece.coord.y+2]
-					piece.moves << next_sq if piece.coord.y == 2 && !@board.square(next_sq[0],next_sq[1]).occupant
+					piece.moves << next_sq if piece.coord.y == 2 && !@board.square(next_sq[0],next_sq[1]).occupant && !@board.square(next_sq[0],next_sq[1]-1).occupant
 					next_sq = [piece.coord.x, piece.coord.y+1]
 					piece.moves << next_sq if next_sq[1] <= 8 && !@board.square(next_sq[0],next_sq[1]).occupant
+					diags = [[piece.coord.x+1, piece.coord.y+1], [piece.coord.x-1, piece.coord.y+1]]
+					diags.each do |d|
+						piece.moves << d if @board.square(d[0],d[1]) && @board.square(d[0],d[1]).occupant && @board.square(d[0],d[1]).occupant.color != piece.color
+					end
 				when :black
 					next_sq = [piece.coord.x, piece.coord.y-2]
 					piece.moves << next_sq if piece.coord.y == 7 && !@board.square(next_sq[0],next_sq[1]).occupant
 					next_sq = [piece.coord.x, piece.coord.y-1]
 					piece.moves << next_sq if next_sq[1] > 0 && !@board.square(next_sq[0],next_sq[1]).occupant
+					diags = [[piece.coord.x-1, piece.coord.y-1], [piece.coord.x+1, piece.coord.y-1]]
+					diags.each { |d| piece.moves << d if @board.square(d[0],d[1]) && @board.square(d[0],d[1]).occupant && @board.square(d[0],d[1]).occupant.color != piece.color }
 			end
-			next_sq = [piece.coord.x+1, piece.coord.y]
-			piece.moves << next_sq if next_sq[0] <= 8 && @board.square(next_sq[0],next_sq[1]).occupant && @board.square(next_sq[0],next_sq[1]).occupant.color != piece.color
-			next_sq = [piece.coord.x-1, piece.coord.y]
-			piece.moves << next_sq if next_sq[0] > 0 && @board.square(next_sq[0],next_sq[1]).occupant && @board.square(next_sq[0],next_sq[1]).occupant.color != piece.color
-		
+						
 		elsif (piece.name == "N")
 			next_sq = [
 				[piece.coord.x-2, piece.coord.y+1],
@@ -172,7 +175,6 @@ class ChessGame
 			]
 			next_sq.each { |sq| piece.moves << sq if @board.square(sq[0],sq[1]) && !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color) }				
 		end
-
 	end
 
 	def decode_move(input)
@@ -197,10 +199,11 @@ class ChessGame
 	end
 
 	def move(piece,x2,y2,x1=nil,y1=nil)
-		movable = @active.set.select { |p| p.name == piece && p.moves.include?([x2,y2]) }
+		movable = @active.set.select { |p| p.name == piece }
+		movable.each { |p| get_moves(p) }
+		movable.select! { |p| p.moves.include?([x2,y2]) }
 		movable.select! { |p| p.coord.x == x1 } if x1
 		movable.select! { |p| p.coord.y == y1 } if y1
-		puts movable
 		if ( movable.size > 1 )
 			puts "Ambiguous command! Multiple pieces can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
 			return false
@@ -214,7 +217,6 @@ class ChessGame
 				@board.square(x2,y2).occupant = nil
 			end
 			movable[0].coord = @board.square(x2,y2)
-			get_moves(movable[0])
 		end
 	end
 
