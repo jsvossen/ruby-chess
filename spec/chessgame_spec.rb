@@ -235,6 +235,43 @@ describe ChessGame do
 			end
 		end
 
+		context "rook" do
+			before(:each) do
+				game.board.empty
+				@r1 = Rook.new(:white)
+				@r1.coord = game.board.square(4,4)
+			end
+			it "can move any number of spaces vertically or horizontally" do
+				game.get_moves(@r1)
+				expect(@r1.moves.sort).to eq [ [4,1],[4,2],[4,3],[4,5],[4,6],[4,7],[4,8],[1,4],[2,4],[3,4],[5,4],[6,4],[7,4],[8,4] ].sort
+			end
+			it "can capture opponent piece" do
+				p = Pawn.new(:black)
+				p.coord = game.board.square(4,7)
+				game.get_moves(@r1)
+				expect(@r1.moves.include? [4,7]).to eq true
+			end
+			it "cannot capture ally piece" do
+				p = Pawn.new(:white)
+				p.coord = game.board.square(4,2)
+				game.get_moves(@r1)
+				expect(@r1.moves.include? [4,2]).to eq false
+			end
+			it "cannot jump pieces" do
+				p = Pawn.new(:black)
+				p.coord = game.board.square(5,4)
+				game.get_moves(@r1)
+				expect(@r1.moves.include? [6,4]).to eq false
+				expect(@r1.moves.include? [7,4]).to eq false
+				expect(@r1.moves.include? [8,4]).to eq false
+			end
+			it "cannot move off of board" do
+				@r1.coord = game.board.square(1,1)
+				game.get_moves(@r1)
+				expect(@r1.moves.sort).to eq [ [1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1] ].sort
+			end
+		end
+
 	end
 
 end
