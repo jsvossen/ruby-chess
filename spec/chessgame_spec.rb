@@ -57,7 +57,7 @@ describe ChessGame do
 				expect(game.board.square(1,2).occupant).to eq nil
 			end
 
-			it "adds occupant destination" do
+			it "adds occupant to destination" do
 				expect(game.board.square(1,4).occupant).to eq @p1
 			end
 
@@ -156,6 +156,38 @@ describe ChessGame do
 				@p1.coord = game.board.square(1,8)
 				game.get_moves(@p1)
 				expect(@p1.moves).to eq []
+			end
+		end
+
+		context "knight" do
+			before(:each) do
+				game.board.empty
+				@n1 = Knight.new("N",:white)
+			end
+
+			it "can move in an L pattern" do
+				@n1.coord = game.board.square(4,4)
+				game.get_moves(@n1)
+				expect(@n1.moves.sort).to eq [ [2,5], [3,6], [5,6], [6,5], [6,3], [5,2], [2,3], [3,2] ].sort
+			end
+			it "can capture opponent piece" do
+				@n1.coord = game.board.square(4,4)
+				p = Pawn.new("P",:black)
+				p.coord = game.board.square(3,6)
+				game.get_moves(@n1)
+				expect(@n1.moves.include? [3,6]).to eq true
+			end
+			it "cannot move on top of ally piece" do
+				@n1.coord = game.board.square(4,4)
+				p = Pawn.new("P",:white)
+				p.coord = game.board.square(3,6)
+				game.get_moves(@n1)
+				expect(@n1.moves.include? [3,6]).to eq false
+			end
+			it "cannot move off of board" do
+				@n1.coord = game.board.square(1,3)
+				game.get_moves(@n1)
+				expect(@n1.moves.sort).to eq [ [2,5], [2,1], [3,2], [3,4] ].sort
 			end
 		end
 

@@ -43,6 +43,12 @@ class ChessBoard
 		puts "    a   b   c   d   e   f   g   h"
 	end
 
+	def empty
+		@squares.each do |label, sq|
+			sq.occupant = nil
+		end
+	end
+
 	class Square
 
 		attr_reader :x, :y, :occupant
