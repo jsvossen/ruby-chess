@@ -204,6 +204,37 @@ describe ChessGame do
 			end
 		end
 
+		context "king" do
+			before(:each) do
+				game.board.empty
+				@k1 = King.new(:white)
+			end
+			it "can move one space in any direction" do
+				@k1.coord = game.board.square(4,4)
+				game.get_moves(@k1)
+				expect(@k1.moves.sort).to eq [ [3,3], [5,5], [4,5], [5,4], [4,3], [3,4], [3,5], [5,3].sort ]
+			end
+			it "can capture opponent piece" do
+				@k1.coord = game.board.square(4,4)
+				p = Pawn.new(:black)
+				p.coord = game.board.square(3,3)
+				game.get_moves(@k1)
+				expect(@k1.moves.include? [3,3]).to eq true
+			end
+			it "cannot capture ally piece" do
+				@k1.coord = game.board.square(4,4)
+				p = Pawn.new(:white)
+				p.coord = game.board.square(3,3)
+				game.get_moves(@k1)
+				expect(@k1.moves.include? [3,3]).to eq false
+			end
+			it "cannot move off of board" do
+				@k1.coord = game.board.square(1,1)
+				game.get_moves(@k1)
+				expect(@k1.moves.sort).to eq [ [1,2], [2,2], [2,1] ].sort
+			end
+		end
+
 	end
 
 end
