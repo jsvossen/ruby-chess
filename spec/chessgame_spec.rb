@@ -212,7 +212,7 @@ describe ChessGame do
 			it "can move one space in any direction" do
 				@k1.coord = game.board.square(4,4)
 				game.get_moves(@k1)
-				expect(@k1.moves.sort).to eq [ [3,3], [5,5], [4,5], [5,4], [4,3], [3,4], [3,5], [5,3].sort ]
+				expect(@k1.moves.sort).to eq [ [3,3], [5,5], [4,5], [5,4], [4,3], [3,4], [3,5], [5,3] ].sort
 			end
 			it "can capture opponent piece" do
 				@k1.coord = game.board.square(4,4)

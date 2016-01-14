@@ -177,7 +177,11 @@ class ChessGame
 				[piece.coord.x+1, piece.coord.y-1],
 				[piece.coord.x-1, piece.coord.y+1]
 			]
-
+			next_sq.each do |sq| 
+				if sq[0].between?(1,8) && sq[1].between?(1,8)
+					piece.moves << sq if !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color)
+				end	
+			end	
 		end
 	end
 
