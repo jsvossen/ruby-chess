@@ -20,21 +20,21 @@ class ChessGame
 		@black_set = []
 
 		8.times do
-			@white_set << Pawn.new("P",:white)
-			@black_set << Pawn.new("P",:black)
+			@white_set << Pawn.new(:white)
+			@black_set << Pawn.new(:black)
 		end
 		2.times do
-			@white_set << Rook.new("R",:white)
-			@white_set << Knight.new("N",:white)
-			@white_set << Bishop.new("B",:white)
-			@black_set << Rook.new("R",:black)
-			@black_set << Knight.new("N",:black)
-			@black_set << Bishop.new("B",:black)
+			@white_set << Rook.new(:white)
+			@white_set << Knight.new(:white)
+			@white_set << Bishop.new(:white)
+			@black_set << Rook.new(:black)
+			@black_set << Knight.new(:black)
+			@black_set << Bishop.new(:black)
 		end
-		@white_set << Queen.new("Q",:white)
-		@white_set << King.new("K",:white)
-		@black_set << Queen.new("Q",:black)
-		@black_set << King.new("K",:black)
+		@white_set << Queen.new(:white)
+		@white_set << King.new(:white)
+		@black_set << Queen.new(:black)
+		@black_set << King.new(:black)
 
 		@players[0].set = @white_set
 		@players[1].set = @black_set
@@ -209,7 +209,7 @@ class ChessGame
 		movable.select! { |p| p.coord.x == x1 } if x1
 		movable.select! { |p| p.coord.y == y1 } if y1
 		if ( movable.size > 1 )
-			puts "Ambiguous command! Multiple pieces can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
+			puts "Ambiguous command! Multiple #{ChessPiece::CODEX[piece.upcase]}s can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
 			return false
 		elsif (movable.size == 0 )
 			puts "Illegal move!"

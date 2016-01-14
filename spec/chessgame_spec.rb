@@ -101,7 +101,7 @@ describe ChessGame do
 				game.active = game.players[1]
 				game.move("P",3,5)
 				game.active = game.players[0]
-				expect(game).to receive(:puts).with("Ambiguous command! Multiple pieces can move to c5.")
+				expect(game).to receive(:puts).with("Ambiguous command! Multiple pawns can move to c5.")
 			end
 
 			it "returns false" do
@@ -126,7 +126,7 @@ describe ChessGame do
 		context "pawn" do
 			before(:each) do
 				game.board.empty
-				@p1 = Pawn.new("P",:white)
+				@p1 = Pawn.new(:white)
 			end
 			it "can move forward one or two spaces from home row" do
 				@p1.coord = game.board.square(1,2)
@@ -140,28 +140,28 @@ describe ChessGame do
 			end
 			it "can capture opponent piece on forward diagonals" do
 				@p1.coord = game.board.square(1,4)
-				p2 = Pawn.new("P",:black)
+				p2 = Pawn.new(:black)
 				p2.coord = game.board.square(2,5)
 				game.get_moves(@p1)
 				expect(@p1.moves.include? [2,5]).to eq true					
 			end
 			it "cannot capture ally piece" do
 				@p1.coord = game.board.square(1,4)
-				p2 = Pawn.new("P",:white)
+				p2 = Pawn.new(:white)
 				p2.coord = game.board.square(2,5)
 				game.get_moves(@p1)
 				expect(@p1.moves.include? [2,5]).to eq false					
 			end
 			it "cannot jump pieces" do
 				@p1.coord = game.board.square(1,2)
-				n1 = Knight.new("N",:white)
+				n1 = Knight.new(:white)
 				n1.coord = game.board.square(1,3)
 				game.get_moves(@p1)
 				expect(@p1.moves.include? [1,4]).to eq false
 			end
 			it "cannot move forward on top of another piece" do
 				@p1.coord = game.board.square(1,2)
-				n1 = Knight.new("N",:white)
+				n1 = Knight.new(:white)
 				n1.coord = game.board.square(1,3)
 				game.get_moves(@p1)
 				expect(@p1.moves.include? [1,3]).to eq false
@@ -176,7 +176,7 @@ describe ChessGame do
 		context "knight" do
 			before(:each) do
 				game.board.empty
-				@n1 = Knight.new("N",:white)
+				@n1 = Knight.new(:white)
 			end
 			it "can move in an L pattern" do
 				@n1.coord = game.board.square(4,4)
@@ -185,14 +185,14 @@ describe ChessGame do
 			end
 			it "can capture opponent piece" do
 				@n1.coord = game.board.square(4,4)
-				p = Pawn.new("P",:black)
+				p = Pawn.new(:black)
 				p.coord = game.board.square(3,6)
 				game.get_moves(@n1)
 				expect(@n1.moves.include? [3,6]).to eq true
 			end
 			it "cannot capture ally piece" do
 				@n1.coord = game.board.square(4,4)
-				p = Pawn.new("P",:white)
+				p = Pawn.new(:white)
 				p.coord = game.board.square(3,6)
 				game.get_moves(@n1)
 				expect(@n1.moves.include? [3,6]).to eq false
