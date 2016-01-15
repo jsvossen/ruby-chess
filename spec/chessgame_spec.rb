@@ -306,6 +306,43 @@ describe ChessGame do
 				@b1.coord = game.board.square(1,1)
 				game.get_moves(@b1)
 				expect(@b1.moves.sort).to eq [ [2,2], [3,3], [4,4], [5,5], [6,6],[7,7], [8,8] ].sort
+			end		
+		end
+
+		context "queen" do
+			before(:each) do
+				game.board.empty
+				@q1 = Queen.new(:white)
+				@q1.coord = game.board.square(4,4)
+			end
+			it "can move any number of spaces in any direction" do
+				game.get_moves(@q1)
+				expect(@q1.moves.sort).to eq [ [1,1], [2,2], [3,3], [5,5], [6,6],[7,7], [8,8], [1,7], [2,6], [3,5], [5,3], [6,2], [7,1], [4,1],[4,2],[4,3],[4,5],[4,6],[4,7],[4,8],[1,4],[2,4],[3,4],[5,4],[6,4],[7,4],[8,4] ].sort
+			end
+			it "can capture opponent piece" do
+				p = Pawn.new(:black)
+				p.coord = game.board.square(2,6)
+				game.get_moves(@q1)
+				expect(@q1.moves.include? [2,6]).to eq true
+			end
+			it "cannot capture ally piece" do
+				p = Pawn.new(:white)
+				p.coord = game.board.square(6,2)
+				game.get_moves(@q1)
+				expect(@q1.moves.include? [6,2]).to eq false
+			end
+			it "cannot jump pieces" do
+				p = Pawn.new(:black)
+				p.coord = game.board.square(5,5)
+				game.get_moves(@q1)
+				expect(@q1.moves.include? [6,6]).to eq false
+				expect(@q1.moves.include? [7,7]).to eq false
+				expect(@q1.moves.include? [8,8]).to eq false
+			end
+			it "cannot move off of board" do
+				@q1.coord = game.board.square(1,1)
+				game.get_moves(@q1)
+				expect(@q1.moves.sort).to eq [ [2,2], [3,3], [4,4], [5,5], [6,6],[7,7], [8,8], [1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1] ].sort
 			end
 		end
 
