@@ -137,16 +137,14 @@ class ChessGame
 					next_sq = [piece.coord.x, piece.coord.y+1]
 					piece.moves << next_sq if next_sq[1] <= 8 && !@board.square(next_sq[0],next_sq[1]).occupant
 					diags = [[piece.coord.x+1, piece.coord.y+1], [piece.coord.x-1, piece.coord.y+1]]
-					diags.each do |d|
-						piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).occupant && @board.square(d[0],d[1]).occupant.color != piece.color
-					end
+					diags.each { |d| piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :black }
 				when :black
 					next_sq = [piece.coord.x, piece.coord.y-2]
 					piece.moves << next_sq if piece.coord.y == 7 && !@board.square(next_sq[0],next_sq[1]).occupant
 					next_sq = [piece.coord.x, piece.coord.y-1]
 					piece.moves << next_sq if next_sq[1] > 0 && !@board.square(next_sq[0],next_sq[1]).occupant
 					diags = [[piece.coord.x-1, piece.coord.y-1], [piece.coord.x+1, piece.coord.y-1]]
-					diags.each { |d| piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).occupant && @board.square(d[0],d[1]).occupant.color != piece.color }
+					diags.each { |d| piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :white }
 			end
 						
 		elsif (piece.name == "N")
@@ -160,11 +158,7 @@ class ChessGame
 				[piece.coord.x-2, piece.coord.y-1],
 				[piece.coord.x-1, piece.coord.y-2]
 			]
-			next_sq.each do |sq| 
-				if sq[0].between?(1,8) && sq[1].between?(1,8)
-					piece.moves << sq if !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color)
-				end	
-			end			
+			next_sq.each { |sq|  piece.moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }		
 
 		elsif (piece.name == "K")
 			next_sq = [
@@ -177,11 +171,26 @@ class ChessGame
 				[piece.coord.x+1, piece.coord.y-1],
 				[piece.coord.x-1, piece.coord.y+1]
 			]
-			next_sq.each do |sq| 
-				if sq[0].between?(1,8) && sq[1].between?(1,8)
-					piece.moves << sq if !(@board.square(sq[0],sq[1]).occupant && @board.square(sq[0],sq[1]).occupant.color == piece.color)
-				end	
-			end	
+			next_sq.each { |sq|  piece.moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }
+
+		# elsif (piece.name == "R")
+		# 	x, y = piece.coord.x, piece.coord.y
+		# 	(x+1).upto(8) do |nx|
+		# 		piece.moves << @board.square(nx,y) if @board.square(x,ny).alignment != piece.color
+		# 		break if @board.square(nx,y).occupant
+		# 	end
+		# 	(x-1).downto(1) do |nx|
+		# 		piece.moves << @board.square(nx,y) if @board.square(x,ny).alignment != piece.color
+		# 		break if @board.square(nx,y).occupant
+		# 	end
+		# 	(y+1).upto(8) do |ny|
+		# 		piece.moves << @board.square(x,ny) if @board.square(x,ny).alignment != piece.color
+		# 		break if @board.square(x,ny).occupant
+		# 	end
+		# 	(y-1).downto(1) do |ny|
+		# 		piece.moves << @board.square(x,ny) if @board.square(x,ny).alignment != piece.color
+		# 		break if @board.square(x,ny).occupant
+		# 	end
 		end
 	end
 

@@ -59,16 +59,21 @@ class ChessBoard
 			@occupant = nil
 		end
 
-		#empty space or piece symbol
-		def mark
-			@occupant ? @occupant.symbol : " "
-		end
-
 		def occupant= piece
 			prev = @occupant
 			@occupant = piece
 			prev.coord = nil if prev!=nil && !piece
 			piece.coord = self if piece && piece.coord != self
+		end
+
+		#print empty space or occupant symbol
+		def mark
+			@occupant ? @occupant.symbol : " "
+		end
+
+		#return occupant color or nil if empty 
+		def alignment
+			@occupant ? @occupant.color : nil
 		end
 
 	end
