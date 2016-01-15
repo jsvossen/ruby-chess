@@ -40,17 +40,13 @@ class ChessGame
 		@players[1].set = @black_set
 
 		reset_board
-		#board.draw
 
 		@gameover = false
 		@winner = nil
 		@active = @players[0]
 
-		# until @gameover do
-		# 	input = Readline.readline("#{@active.name}: ")
-		# 	handle_input(input)
-		# end
 	end
+
 
 	def reset_board
 
@@ -93,31 +89,54 @@ class ChessGame
 
 	end
 
+
+	def play
+		until @gameover do
+			board.draw
+			input = Readline.readline("#{@active.name}: ")
+			until handle_input(input) do
+				input = Readline.readline("#{@active.name}: ")
+			end
+			@active = @players[@players.index(@active)-1]
+		end
+	end
+
+
 	def handle_input(input)
 		case input.downcase
 			when "save", /^save\s\w+$/
 				file = input.split[1]
 				FileManager.save_game(self,file)
+				return false
+
 			when "show saves"
 				puts "***Saved Games***"
 				FileManager.list_saves
 				puts "***End***"
+				return false
+
 			when /^[pkqrnb][a-h]?[1-8]?x?[a-h][1-8]/
-				#process move
+				m = decode_move(input)
+				move(m[:piece],m[:x2],m[:y2],m[:x1],m[:y1])
+
 			when "resign"
 				resign(@active)
+
 			when "help"
 				Help.help
 				@board.draw
+				return false
+
 			when "quit", "exit"
 				puts "Goodbye!"
 				exit
+
 			else
 				puts "Invalid input. Enter [help] for commands."
-				input = Readline.readline("#{@active.name}: ")
-				handle_input(input)
+				return false
 		end
 	end
+
 
 	def resign(player)
 		@winner = @players.select { |p| p != player }.shift
@@ -125,6 +144,7 @@ class ChessGame
 		puts "#{player.name} has resigned!"
 		puts "#{@winner.name} wins!"
 	end
+
 
 	def get_moves(piece)
 		piece.moves = []
@@ -273,6 +293,7 @@ class ChessGame
 		end
 	end
 
+
 	def decode_move(input)
 		input = input.tr("x","").split(//)
 		move = {}
@@ -294,8 +315,9 @@ class ChessGame
 		move
 	end
 
+
 	def move(piece,x2,y2,x1=nil,y1=nil)
-		movable = @active.set.select { |p| p.name == piece && p.captured == false }
+		movable = @active.set.select { |p| p.name == piece && !p.captured }
 		movable.each { |p| get_moves(p) }
 		movable.select! { |p| p.moves.include?([x2,y2]) }
 		movable.select! { |p| p.coord.x == x1 } if x1
@@ -314,5 +336,6 @@ class ChessGame
 			movable[0].coord = @board.square(x2,y2)
 		end
 	end
+
 
 end
