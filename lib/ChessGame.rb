@@ -191,6 +191,37 @@ class ChessGame
 				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
 				break if @board.square(x,ny).occupant
 			end
+
+		elsif (piece.name == "B")
+			nx, ny = piece.coord.x, piece.coord.y
+			while nx < 8 && ny < 8 do
+				nx += 1
+				ny += 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = piece.coord.x, piece.coord.y
+			while nx > 1 && ny > 1 do
+				nx -= 1
+				ny -= 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = piece.coord.x, piece.coord.y
+			while nx > 1 && ny < 8 do
+				nx -= 1
+				ny += 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = piece.coord.x, piece.coord.y
+			while nx < 8 && ny > 1 do
+				nx += 1
+				ny -= 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+
 		end
 	end
 
