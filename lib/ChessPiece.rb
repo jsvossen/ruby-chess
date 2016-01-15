@@ -24,7 +24,7 @@ class ChessPiece
 	def coord= coord
 		prev = @coord
 		@coord = coord
-		prev.occupant = nil if prev!=nil && !coord
+		prev.occupant = nil if prev && prev.occupant == self
 		@coord.occupant = self if @coord && @coord.occupant != self
 	end
 

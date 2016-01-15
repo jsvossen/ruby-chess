@@ -62,7 +62,7 @@ class ChessBoard
 		def occupant= piece
 			prev = @occupant
 			@occupant = piece
-			prev.coord = nil if prev!=nil && !piece
+			prev.coord = nil if prev && prev.coord == self
 			piece.coord = self if piece && piece.coord != self
 		end
 

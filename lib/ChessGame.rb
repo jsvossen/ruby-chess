@@ -259,7 +259,6 @@ class ChessGame
 			puts "Illegal move!"
 			return false
 		else
-			movable[0].coord = nil
 			if (@board.square(x2,y2).occupant)
 				@board.square(x2,y2).occupant.captured = true
 				@board.square(x2,y2).occupant = nil
