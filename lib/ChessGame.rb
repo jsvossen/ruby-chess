@@ -334,6 +334,11 @@ class ChessGame
 				@board.square(x2,y2).occupant = nil
 			end
 			movable[0].coord = @board.square(x2,y2)
+			if (movable[0].is_a?(Pawn) && movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
+				puts "#{@active.name}..."
+				movable[0].promote
+			end
+			return true
 		end
 	end
 

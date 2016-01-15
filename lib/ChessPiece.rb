@@ -32,10 +32,34 @@ end
 
 class Pawn < ChessPiece
 
+	attr_accessor :name
+
 	def initialize(color)
 		super(color)
+		demote
+	end
+
+	def demote
 		@name = "P"
 		@color == :white ? @symbol = "\u2659".encode('utf-8') : @symbol = "\u265F".encode('utf-8')
+	end
+
+	def promote
+		input = Readline.readline("Promote pawn to [Q]ueen, [B]ishop, [R]ook, or k[N]ight? ").upcase
+		until input == "Q" || input == "R" || input == "B" || input == "N" do
+			input = Readline.readline("Promote pawn to [Q]ueen, [B]ishop, [R]ook, or k[N]ight? ")
+		end
+		@name = input.upcase
+		case @name
+			when "Q"
+				@color == :white ? @symbol = "\u2655".encode('utf-8') : @symbol = "\u265B".encode('utf-8')
+			when "R"
+				@color == :white ? @symbol = "\u2656".encode('utf-8') : @symbol = "\u265C".encode('utf-8')
+			when "B"
+				@color == :white ? @symbol = "\u2657".encode('utf-8') : @symbol = "\u265D".encode('utf-8')
+			when "N"
+				@color == :white ? @symbol = "\u2658".encode('utf-8') : @symbol = "\u265E".encode('utf-8')
+		end
 	end
 
 end
