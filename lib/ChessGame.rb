@@ -173,24 +173,24 @@ class ChessGame
 			]
 			next_sq.each { |sq|  piece.moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }
 
-		# elsif (piece.name == "R")
-		# 	x, y = piece.coord.x, piece.coord.y
-		# 	(x+1).upto(8) do |nx|
-		# 		piece.moves << @board.square(nx,y) if @board.square(x,ny).alignment != piece.color
-		# 		break if @board.square(nx,y).occupant
-		# 	end
-		# 	(x-1).downto(1) do |nx|
-		# 		piece.moves << @board.square(nx,y) if @board.square(x,ny).alignment != piece.color
-		# 		break if @board.square(nx,y).occupant
-		# 	end
-		# 	(y+1).upto(8) do |ny|
-		# 		piece.moves << @board.square(x,ny) if @board.square(x,ny).alignment != piece.color
-		# 		break if @board.square(x,ny).occupant
-		# 	end
-		# 	(y-1).downto(1) do |ny|
-		# 		piece.moves << @board.square(x,ny) if @board.square(x,ny).alignment != piece.color
-		# 		break if @board.square(x,ny).occupant
-		# 	end
+		elsif (piece.name == "R")
+			x, y = piece.coord.x, piece.coord.y
+			(x+1).upto(8) do |nx|
+				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
+				break if @board.square(nx,y).occupant
+			end
+			(x-1).downto(1) do |nx|
+				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
+				break if @board.square(nx,y).occupant
+			end
+			(y+1).upto(8) do |ny|
+				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
+				break if @board.square(x,ny).occupant
+			end
+			(y-1).downto(1) do |ny|
+				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
+				break if @board.square(x,ny).occupant
+			end
 		end
 	end
 
