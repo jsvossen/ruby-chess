@@ -222,13 +222,61 @@ class ChessGame
 				break if @board.square(nx,ny).occupant
 			end
 
+		elsif (piece.name == "Q")
+			#vertical and horizontal
+			x, y = piece.coord.x, piece.coord.y
+			(x+1).upto(8) do |nx|
+				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
+				break if @board.square(nx,y).occupant
+			end
+			(x-1).downto(1) do |nx|
+				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
+				break if @board.square(nx,y).occupant
+			end
+			(y+1).upto(8) do |ny|
+				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
+				break if @board.square(x,ny).occupant
+			end
+			(y-1).downto(1) do |ny|
+				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
+				break if @board.square(x,ny).occupant
+			end
+			#diagonals
+			nx, ny = x, y
+			while nx < 8 && ny < 8 do
+				nx += 1
+				ny += 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = x, y
+			while nx > 1 && ny > 1 do
+				nx -= 1
+				ny -= 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = x, y
+			while nx > 1 && ny < 8 do
+				nx -= 1
+				ny += 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
+			nx, ny = x, y
+			while nx < 8 && ny > 1 do
+				nx += 1
+				ny -= 1
+				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				break if @board.square(nx,ny).occupant
+			end
 		end
 	end
 
 	def decode_move(input)
 		input = input.tr("x","").split(//)
 		move = {}
-		move[:piece] = input.shift
+		move[:piece] = input.shift.upcase
 		move[:x1] = nil
 		move[:y1] = nil
 		if ( input.length == 4 )
@@ -247,7 +295,7 @@ class ChessGame
 	end
 
 	def move(piece,x2,y2,x1=nil,y1=nil)
-		movable = @active.set.select { |p| p.name == piece }
+		movable = @active.set.select { |p| p.name == piece && p.captured == false }
 		movable.each { |p| get_moves(p) }
 		movable.select! { |p| p.moves.include?([x2,y2]) }
 		movable.select! { |p| p.coord.x == x1 } if x1
