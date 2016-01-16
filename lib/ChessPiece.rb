@@ -62,7 +62,7 @@ class Pawn < ChessPiece
 	def promote
 		input = Readline.readline("Promote pawn to [Q]ueen, [B]ishop, [R]ook, or k[N]ight? ").upcase
 		until input == "Q" || input == "R" || input == "B" || input == "N" do
-			input = Readline.readline("Promote pawn to [Q]ueen, [B]ishop, [R]ook, or k[N]ight? ")
+			input = Readline.readline("Promote pawn to [Q]ueen, [B]ishop, [R]ook, or k[N]ight? ").upcase
 		end
 		@name = input.upcase
 		case @name

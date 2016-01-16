@@ -8,7 +8,7 @@ include Help
 
 class ChessGame
 
-	attr_writer :active
+	attr_accessor :active
 	attr_reader :board, :players, :white_set, :black_set
 
 	def initialize(player1="White",player2="Black")
@@ -71,8 +71,8 @@ class ChessGame
 		@black_set[4].coord = @board.square(7,8)
 
 		#pawns
-		@white_set[5..12].each_with_index { |pawn,i| pawn.coord = @board.square(i-4,2) }
-		@black_set[5..12].each_with_index { |pawn,i| pawn.coord = @board.square(i-4,7) }
+		@white_set[5..12].each_with_index { |pawn,i| pawn.coord = @board.square(i-4,2); pawn.demote; }
+		@black_set[5..12].each_with_index { |pawn,i| pawn.coord = @board.square(i-4,7); pawn.demote; }
 
 		#queen
 		@white_set[13].coord = @board.square(4,1)
@@ -97,7 +97,7 @@ class ChessGame
 			until handle_input(input) do
 				input = Readline.readline("#{@active.name}: ")
 			end
-			@active = @players[@players.index(@active)-1]
+			@active = opponent
 		end
 	end
 
