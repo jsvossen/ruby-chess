@@ -11,7 +11,7 @@ class ChessGame
 	attr_writer :active
 	attr_reader :board, :players, :white_set, :black_set
 
-	def initialize(player1="Player 1",player2="Player 2")
+	def initialize(player1="White",player2="Black")
 
 		@players = [ChessPlayer.new(player1,:white), ChessPlayer.new(player2,:black)]
 		@board = ChessBoard.new
@@ -121,6 +121,7 @@ class ChessGame
 
 			when "resign"
 				resign(@active)
+				return true
 
 			when "help"
 				Help.help
@@ -301,16 +302,16 @@ class ChessGame
 		move[:x1] = nil
 		move[:y1] = nil
 		if ( input.length == 4 )
-			move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+			move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift.downcase)+1
 			move[:y1] = input.shift.to_i
 		elsif ( input.length == 3 )
 			if input[0].to_i > 0
 				move[:y1] = input.shift.to_i
 			else
-				move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+				move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift.downcase)+1
 			end
 		end
-		move[:x2] = ChessBoard::CHAR_RANGE.index(input.shift)+1
+		move[:x2] = ChessBoard::CHAR_RANGE.index(input.shift.downcase)+1
 		move[:y2] = input.shift.to_i
 		move
 	end

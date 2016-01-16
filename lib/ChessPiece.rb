@@ -67,7 +67,7 @@ class Pawn < ChessPiece
 		@name = input.upcase
 		case @name
 			when "Q"
-				@color == :white ? @symbol = SYM[:wqueen] : @symbol = SYM[:wqueen]
+				@color == :white ? @symbol = SYM[:wqueen] : @symbol = SYM[:bqueen]
 			when "R"
 				@color == :white ? @symbol = SYM[:wrook] : @symbol = SYM[:brook]
 			when "B"
