@@ -348,4 +348,25 @@ describe ChessGame do
 
 	end
 
+
+	describe "#check_check" do
+		before(:each) do
+			wking = game.players[0].set.select { |p| p.name == "K"}
+			brook = game.players[1].set.select { |p| p.name == "R"}
+			game.board.empty
+			wking[0].coord = game.board.square(3,3)
+			brook[0].coord = game.board.square(3,7)
+		end
+		it "puts player in check if king is in danger" do
+			game.check_check(game.players[0])
+			expect(game.players[0].in_check?).to eq true
+		end
+		it "takes player out of check if king is safe" do
+			game.move("K",4,3)
+			game.check_check(game.players[0])
+			expect(game.players[0].in_check?).to eq false
+		end
+
+	end
+
 end

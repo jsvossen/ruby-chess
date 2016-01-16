@@ -96,12 +96,13 @@ class ChessGame
 
 
 	def play
+		board.draw
 		until @gameover do
-			board.draw
 			input = Readline.readline("#{@active.name}: ")
 			until handle_input(input) do
 				input = Readline.readline("#{@active.name}: ")
 			end
+			board.draw
 			check_check(opponent)
 			puts "#{opponent.name} is in check!" if opponent.in_check?
 			@active = opponent
@@ -309,12 +310,14 @@ class ChessGame
 	def check_check(player)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
-			get_moves(piece)
-			if (piece.moves.include? [king.x, king.y])
-				player.check = true
-				break
-			else
-				player.check = false
+			if ( !piece.captured && piece.coord )
+				get_moves(piece)
+				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
+					player.check = true
+					break
+				else
+					player.check = false
+				end
 			end
 		end
 	end
