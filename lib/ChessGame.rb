@@ -84,9 +84,14 @@ class ChessGame
 		@black_set[14].coord = @board.square(1,8)
 		@black_set[15].coord = @board.square(8,8)
 
-		@white_set.each { |piece| piece.captured = false; get_moves(piece); }
-		@black_set.each { |piece| piece.captured = false; get_moves(piece); }
+		@white_set.each { |piece| piece.captured = false; }
+		@black_set.each { |piece| piece.captured = false; }
 
+	end
+
+
+	def opponent(player=@active)
+		@players[@players.index(player)-1]
 	end
 
 
@@ -97,6 +102,8 @@ class ChessGame
 			until handle_input(input) do
 				input = Readline.readline("#{@active.name}: ")
 			end
+			check_check(opponent)
+			puts "#{opponent.name} is in check!" if opponent.in_check?
 			@active = opponent
 		end
 	end
@@ -296,6 +303,19 @@ class ChessGame
 				movable[0].promote
 			end
 			return true
+		end
+	end
+
+	def check_check(player)
+		king = player.set.select { |p| p.name == "K"}
+		opponent(player).set.each do |piece|
+			get_moves(piece)
+			if (piece.moves.include? [king.x, king.y])
+				player.check = true
+				break
+			else
+				player.check = false
+			end
 		end
 	end
 
