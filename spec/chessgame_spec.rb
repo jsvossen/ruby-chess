@@ -39,7 +39,7 @@ describe ChessGame do
 			expect(game.board).to receive(:puts).with("1 | #{wrook} | #{wknight} | #{wbish} | #{wqueen} | #{wking} | #{wbish} | #{wknight} | #{wrook} | 1").ordered
 			expect(game.board).to receive(:puts).with("  |-------------------------------|").ordered
 			expect(game.board).to receive(:puts).with("    a   b   c   d   e   f   g   h").ordered
-			game.board.draw
+			game.board.line_draw
 		end
 
 	end

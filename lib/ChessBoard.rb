@@ -22,6 +22,21 @@ class ChessBoard
 	end
 
 	def draw
+		puts "    a  b  c  d  e  f  g  h"
+		puts "  |------------------------|"
+		puts "8 | #{square(1,8).mark} \e[47m #{square(2,8).mark} \e[0m #{square(3,8).mark} \e[47m #{square(4,8).mark} \e[0m #{square(5,8).mark} \e[47m #{square(6,8).mark} \e[0m #{square(7,8).mark} \e[47m #{square(8,8).mark} \e[0m| 8"
+		puts "7 |\e[47m #{square(1,7).mark} \e[0m #{square(2,7).mark} \e[47m #{square(3,7).mark} \e[0m #{square(4,7).mark} \e[47m #{square(5,7).mark} \e[0m #{square(6,7).mark} \e[47m #{square(7,7).mark} \e[0m #{square(8,7).mark} | 7"
+		puts "6 | #{square(1,6).mark} \e[47m #{square(2,6).mark} \e[0m #{square(3,6).mark} \e[47m #{square(4,6).mark} \e[0m #{square(5,6).mark} \e[47m #{square(6,6).mark} \e[0m #{square(7,6).mark} \e[47m #{square(8,6).mark} \e[0m| 6"
+		puts "5 |\e[47m #{square(1,5).mark} \e[0m #{square(2,5).mark} \e[47m #{square(3,5).mark} \e[0m #{square(4,5).mark} \e[47m #{square(5,5).mark} \e[0m #{square(6,5).mark} \e[47m #{square(7,5).mark} \e[0m #{square(8,5).mark} | 5"
+		puts "4 | #{square(1,4).mark} \e[47m #{square(2,4).mark} \e[0m #{square(3,4).mark} \e[47m #{square(4,4).mark} \e[0m #{square(5,4).mark} \e[47m #{square(6,4).mark} \e[0m #{square(7,4).mark} \e[47m #{square(8,4).mark} \e[0m| 4"
+		puts "3 |\e[47m #{square(1,3).mark} \e[0m #{square(2,3).mark} \e[47m #{square(3,3).mark} \e[0m #{square(4,3).mark} \e[47m #{square(5,3).mark} \e[0m #{square(6,3).mark} \e[47m #{square(7,3).mark} \e[0m #{square(8,3).mark} | 3"
+		puts "2 | #{square(1,2).mark} \e[47m #{square(2,2).mark} \e[0m #{square(3,2).mark} \e[47m #{square(4,2).mark} \e[0m #{square(5,2).mark} \e[47m #{square(6,2).mark} \e[0m #{square(7,2).mark} \e[47m #{square(8,2).mark} \e[0m| 2"
+		puts "1 |\e[47m #{square(1,1).mark} \e[0m #{square(2,1).mark} \e[47m #{square(3,1).mark} \e[0m #{square(4,1).mark} \e[47m #{square(5,1).mark} \e[0m #{square(6,1).mark} \e[47m #{square(7,1).mark} \e[0m #{square(8,1).mark} | 1"
+		puts "  |------------------------|"
+		puts "    a  b  c  d  e  f  g  h"
+	end
+
+	def line_draw
 		puts "    a   b   c   d   e   f   g   h"
 		puts "  |-------------------------------|"
 		puts "8 | #{square(1,8).mark} | #{square(2,8).mark} | #{square(3,8).mark} | #{square(4,8).mark} | #{square(5,8).mark} | #{square(6,8).mark} | #{square(7,8).mark} | #{square(8,8).mark} | 8"
