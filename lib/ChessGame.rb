@@ -147,151 +147,152 @@ class ChessGame
 	end
 
 
-	def get_moves(piece)
-		piece.moves = []
+	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
+		moves = []
 
 		if (piece.name == "P")
 			case piece.color
 				when :white
-					next_sq = [piece.coord.x, piece.coord.y+2]
-					piece.moves << next_sq if piece.coord.y == 2 && !@board.square(next_sq[0],next_sq[1]).occupant && !@board.square(next_sq[0],next_sq[1]-1).occupant
-					next_sq = [piece.coord.x, piece.coord.y+1]
-					piece.moves << next_sq if next_sq[1] <= 8 && !@board.square(next_sq[0],next_sq[1]).occupant
-					diags = [[piece.coord.x+1, piece.coord.y+1], [piece.coord.x-1, piece.coord.y+1]]
-					diags.each { |d| piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :black }
+					moves << [ox,oy+2] if piece.coord.y == 2 && !@board.square(ox,oy+2).occupant && !@board.square(ox,oy+1).occupant
+					moves << [ox,oy+1] if oy+1 <= 8 && !@board.square(ox,oy+1).occupant
+					diags = [[ox+1, oy+1], [ox-1, oy+1]]
+					diags.each { |d| moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :black }
 				when :black
-					next_sq = [piece.coord.x, piece.coord.y-2]
-					piece.moves << next_sq if piece.coord.y == 7 && !@board.square(next_sq[0],next_sq[1]).occupant
-					next_sq = [piece.coord.x, piece.coord.y-1]
-					piece.moves << next_sq if next_sq[1] > 0 && !@board.square(next_sq[0],next_sq[1]).occupant
-					diags = [[piece.coord.x-1, piece.coord.y-1], [piece.coord.x+1, piece.coord.y-1]]
-					diags.each { |d| piece.moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :white }
+					moves << [ox,oy-2] if piece.coord.y == 7 && !@board.square(ox,oy-2).occupant && !@board.square(ox,oy-1).occupant
+					moves << [ox,oy-1] if oy-1 > 0 && !@board.square(ox,oy-1).occupant
+					diags = [[ox-1, oy-1], [ox+1, oy-1]]
+					diags.each { |d| moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :white }
 			end
 						
 		elsif (piece.name == "N")
 			next_sq = [
-				[piece.coord.x-2, piece.coord.y+1],
-				[piece.coord.x-1, piece.coord.y+2],
-				[piece.coord.x+1, piece.coord.y+2],
-				[piece.coord.x+2, piece.coord.y+1],
-				[piece.coord.x+2, piece.coord.y-1],
-				[piece.coord.x+1, piece.coord.y-2],
-				[piece.coord.x-2, piece.coord.y-1],
-				[piece.coord.x-1, piece.coord.y-2]
+				[ox-2, oy+1],
+				[ox-1, oy+2],
+				[ox+1, oy+2],
+				[ox+2, oy+1],
+				[ox+2, oy-1],
+				[ox+1, oy-2],
+				[ox-2, oy-1],
+				[ox-1, oy-2]
 			]
-			next_sq.each { |sq|  piece.moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }		
+			next_sq.each { |sq|  moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }		
 
 		elsif (piece.name == "K")
 			next_sq = [
-				[piece.coord.x+1, piece.coord.y],
-				[piece.coord.x-1, piece.coord.y],
-				[piece.coord.x, piece.coord.y+1],
-				[piece.coord.x, piece.coord.y-1],
-				[piece.coord.x+1, piece.coord.y+1],
-				[piece.coord.x-1, piece.coord.y-1],
-				[piece.coord.x+1, piece.coord.y-1],
-				[piece.coord.x-1, piece.coord.y+1]
+				[ox+1, oy],
+				[ox-1, oy],
+				[ox, oy+1],
+				[ox, oy-1],
+				[ox+1, oy+1],
+				[ox-1, oy-1],
+				[ox+1, oy-1],
+				[ox-1, oy+1]
 			]
-			next_sq.each { |sq|  piece.moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }
+			next_sq.each { |sq|  moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }
 
 		elsif (piece.name == "R")
-			x, y = piece.coord.x, piece.coord.y
-			(x+1).upto(8) do |nx|
-				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
-				break if @board.square(nx,y).occupant
+			(ox+1).upto(8) do |nx|
+				moves << [nx,oy] if @board.square(nx,oy).alignment != piece.color
+				break if @board.square(nx,oy).occupant
 			end
-			(x-1).downto(1) do |nx|
-				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
-				break if @board.square(nx,y).occupant
+			(ox-1).downto(1) do |nx|
+				moves << [nx,oy] if @board.square(nx,oy).alignment != piece.color
+				break if @board.square(nx,oy).occupant
 			end
-			(y+1).upto(8) do |ny|
-				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
-				break if @board.square(x,ny).occupant
+			(oy+1).upto(8) do |ny|
+				moves << [ox,ny] if @board.square(ox,ny).alignment != piece.color
+				break if @board.square(ox,ny).occupant
 			end
-			(y-1).downto(1) do |ny|
-				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
-				break if @board.square(x,ny).occupant
+			(oy-1).downto(1) do |ny|
+				moves << [ox,ny] if @board.square(ox,ny).alignment != piece.color
+				break if @board.square(ox,ny).occupant
 			end
 
 		elsif (piece.name == "B")
-			nx, ny = piece.coord.x, piece.coord.y
+			nx, ny = ox, oy
 			while nx < 8 && ny < 8 do
 				nx += 1
 				ny += 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = piece.coord.x, piece.coord.y
+			nx, ny = ox, oy
 			while nx > 1 && ny > 1 do
 				nx -= 1
 				ny -= 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = piece.coord.x, piece.coord.y
+			nx, ny = ox, oy
 			while nx > 1 && ny < 8 do
 				nx -= 1
 				ny += 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = piece.coord.x, piece.coord.y
+			nx, ny = ox, oy
 			while nx < 8 && ny > 1 do
 				nx += 1
 				ny -= 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
 
 		elsif (piece.name == "Q")
 			#vertical and horizontal
-			x, y = piece.coord.x, piece.coord.y
-			(x+1).upto(8) do |nx|
-				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
-				break if @board.square(nx,y).occupant
+			(ox+1).upto(8) do |nx|
+				moves << [nx,oy] if @board.square(nx,oy).alignment != piece.color
+				break if @board.square(nx,oy).occupant
 			end
-			(x-1).downto(1) do |nx|
-				piece.moves << [nx,y] if @board.square(nx,y).alignment != piece.color
-				break if @board.square(nx,y).occupant
+			(ox-1).downto(1) do |nx|
+				moves << [nx,oy] if @board.square(nx,oy).alignment != piece.color
+				break if @board.square(nx,oy).occupant
 			end
-			(y+1).upto(8) do |ny|
-				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
-				break if @board.square(x,ny).occupant
+			(oy+1).upto(8) do |ny|
+				moves << [ox,ny] if @board.square(ox,ny).alignment != piece.color
+				break if @board.square(ox,ny).occupant
 			end
-			(y-1).downto(1) do |ny|
-				piece.moves << [x,ny] if @board.square(x,ny).alignment != piece.color
-				break if @board.square(x,ny).occupant
+			(oy-1).downto(1) do |ny|
+				moves << [ox,ny] if @board.square(ox,ny).alignment != piece.color
+				break if @board.square(ox,ny).occupant
 			end
 			#diagonals
-			nx, ny = x, y
+			nx, ny = ox, oy
 			while nx < 8 && ny < 8 do
 				nx += 1
 				ny += 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = x, y
+			nx, ny = ox, oy
 			while nx > 1 && ny > 1 do
 				nx -= 1
 				ny -= 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = x, y
+			nx, ny = ox, oy
 			while nx > 1 && ny < 8 do
 				nx -= 1
 				ny += 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
-			nx, ny = x, y
+			nx, ny = ox, oy
 			while nx < 8 && ny > 1 do
 				nx += 1
 				ny -= 1
-				piece.moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
+				moves << [nx, ny] if @board.square(nx,ny).alignment != piece.color
 				break if @board.square(nx,ny).occupant
 			end
 		end
+
+		if (ox == piece.coord.x && oy == piece.coord.y)
+			piece.moves = moves
+		else
+			moves
+		end
+
 	end
 
 
@@ -335,7 +336,7 @@ class ChessGame
 				@board.square(x2,y2).occupant = nil
 			end
 			movable[0].coord = @board.square(x2,y2)
-			if (movable[0].is_a?(Pawn) && movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
+			if (movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
 				puts "#{@active.name}..."
 				movable[0].promote
 			end
