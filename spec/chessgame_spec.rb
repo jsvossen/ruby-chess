@@ -394,4 +394,35 @@ describe ChessGame do
 		end
 	end
 
+
+	describe "#gameover" do
+
+		context "#checkmate?" do
+			it "returns true if player is in check and has no moves" do
+				
+			end
+			it "returns false if player has moves" do
+				
+			end
+		end
+
+		context "#stalemate?" do
+			it "returns true if player is not in check and has no moves" do
+				
+			end
+			it "returns false if player has moves" do
+				
+			end
+		end	
+
+		context "#draw?" do
+			it "returns true if both players agree to draw" do
+				
+			end
+			it "returns false if player has moves" do
+				
+			end
+		end		
+	end
+
 end

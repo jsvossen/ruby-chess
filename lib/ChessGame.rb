@@ -41,7 +41,6 @@ class ChessGame
 
 		reset_board
 
-		@gameover = false
 		@winner = nil
 		@active = @players[0]
 
@@ -97,7 +96,7 @@ class ChessGame
 
 	def play
 		board.draw
-		until @gameover do
+		until gameover? do
 			input = Readline.readline("#{@active.name}: ")
 			until handle_input(input) do
 				input = Readline.readline("#{@active.name}: ")
@@ -152,6 +151,9 @@ class ChessGame
 		@gameover = true
 		puts "#{player.name} has resigned!"
 		puts "#{@winner.name} wins!"
+	end
+
+	def gameover?
 	end
 
 
