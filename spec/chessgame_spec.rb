@@ -349,7 +349,7 @@ describe ChessGame do
 	end
 
 
-	describe "#check_check" do
+	describe "#check?" do
 		before(:each) do
 			wking = game.players[0].set.select { |p| p.name == "K"}
 			brook = game.players[1].set.select { |p| p.name == "R"}
@@ -358,14 +358,12 @@ describe ChessGame do
 			brook[0].coord = game.board.square(3,7)
 		end
 		it "puts player in check if king is in danger" do
-			expect(game.check_check(game.players[0])).to eq true
-			expect(game.players[0].in_check?).to eq true
+			expect(game.check?(game.players[0])).to eq true
 		end
 		it "takes player out of check if king is safe" do
-			game.check_check(game.players[0])
+			game.check?(game.players[0])
 			game.move("K",4,3)
-			expect(game.check_check(game.players[0])).to eq false
-			expect(game.players[0].in_check?).to eq false
+			expect(game.check?(game.players[0])).to eq false
 		end
 
 	end
@@ -409,23 +407,36 @@ describe ChessGame do
 				bbish[1].coord = game.board.square(5,3)
 			end
 			it "returns true if player is in check and has no moves" do
-				expect(game.check_check(game.players[0])).to eq true
+				expect(game.check?(game.players[0])).to eq true
 				expect(game.players[0].set.select { |p| p.in_play? && !game.get_moves(p).empty? }).to eq []
 				expect(game.checkmate?).to eq true
 			end
 			it "returns false if player has moves" do
 				bbish[1].coord = nil
-				expect(game.check_check(game.players[0])).to eq true
+				expect(game.check?(game.players[0])).to eq true
 				expect(game.checkmate?).to eq false
 			end
 		end
 
 		context "#stalemate?" do
+			before(:each) do
+				wking = game.players[0].set.select { |p| p.name == "K"}
+				wqueen = game.players[0].set.select { |p| p.name == "Q"}
+				bking = game.players[1].set.select { |p| p.name == "K"}
+				game.board.empty
+				wking[0].coord = game.board.square(3,4)
+				wqueen[0].coord = game.board.square(3,6)
+				bking[0].coord = game.board.square(1,5)
+				game.active = game.players[1]
+			end
 			it "returns true if player is not in check and has no moves" do
-				
+				expect(game.check?(game.players[1])).to eq false
+				expect(game.players[1].set.select { |p| p.in_play? && !game.get_moves(p).empty? }).to eq []
+				expect(game.stalemate?).to eq true
 			end
 			it "returns false if player has moves" do
-				
+				wqueen[0].coord = game.board.square(3,5)
+				expect(game.stalemate?).to eq false
 			end
 		end	
 

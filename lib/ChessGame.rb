@@ -102,8 +102,7 @@ class ChessGame
 				input = Readline.readline("#{@active.name}: ")
 			end
 			board.draw
-			check_check(opponent)
-			puts "#{opponent.name} is in check!" if opponent.in_check?
+			puts "#{opponent.name} is in check!" if check?(opponent)
 			@active = opponent
 		end
 	end
@@ -159,11 +158,12 @@ class ChessGame
 
 	def checkmate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
-		player.in_check? && in_play.all? { |p| get_moves(p).empty?  }
+		check?(player) && in_play.all? { |p| get_moves(p).empty?  }
 	end
 
 	def stalemate?(player=@active)
-		
+		in_play = player.set.select { |p| p.in_play? }
+		in_play.all? { |p| get_moves(p).empty? } && !check?(player)
 	end
 
 	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
@@ -318,17 +318,14 @@ class ChessGame
 	end
 
 
-	def check_check(player)
+	def check?(player)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
 			if ( piece.in_play? )
 				get_moves(piece)
 				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
-					player.check = true
 					return true
 					break
-				else
-					player.check = false
 				end
 			end
 		end
@@ -344,7 +341,7 @@ class ChessGame
 		player = @players.select { |p| p.color == piece.color }
 
 		piece.coord = dest
-		vulnerable = check_check(player[0])
+		vulnerable = check?(player[0])
 
 		#reset
 		piece.coord = @board.square(ox,oy)

@@ -6,11 +6,6 @@ class ChessPlayer
 		@name = name
 		@color = color
 		@set = nil
-		@check = false
-	end
-
-	def in_check?
-		@check
 	end
 
 end
