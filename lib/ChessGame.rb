@@ -102,9 +102,18 @@ class ChessGame
 				input = Readline.readline("#{@active.name}: ")
 			end
 			board.draw
-			puts "#{opponent.name} is in check!" if check?(opponent)
 			@active = opponent
+			puts "#{@active.name} is in check!" if check? && !checkmate?
+			request_draw if opponent.draw
 		end
+		if checkmate?
+			puts "Checkmate!"
+			@winner = opponent
+		else
+			puts "Stalemate! #{@active.name} has no moves." if stalemate?
+			puts "The game is a draw!" if draw? || stalemate?
+		end
+		puts "#{@winner.name} wins!" if @winner
 	end
 
 
@@ -129,6 +138,11 @@ class ChessGame
 				resign(@active)
 				return true
 
+			when "draw"
+				@active.draw = true
+				puts "You have requested a draw. Make one last move: "
+				return false
+
 			when "help"
 				Help.help
 				@board.draw
@@ -147,27 +161,48 @@ class ChessGame
 
 	def resign(player)
 		@winner = @players.select { |p| p != player }.shift
-		@gameover = true
 		puts "#{player.name} has resigned!"
-		puts "#{@winner.name} wins!"
 	end
 
+
 	def gameover?
-		checkmate? || stalemate? || draw?
+		checkmate? || stalemate? || draw? || @winner
 	end
+
 
 	def checkmate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		check?(player) && in_play.all? { |p| get_moves(p).empty?  }
 	end
 
+
 	def stalemate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		in_play.all? { |p| get_moves(p).empty? } && !check?(player)
 	end
 
+
+	def draw?
+		@players.all? { |p| p.draw }
+	end
+
+	def request_draw
+		puts "#{opponent.name} has request a draw."
+		input = Readline.readline("#{@active.name}, agree to a draw? ").downcase
+		until input=="y" || input=="yes" || input=="n" || input=="no" do
+			input = Readline.readline("#{@active.name}, agree to a draw? Yes or no: ").downcase
+		end
+		if (input == "y" || input == "yes")
+			@active.draw = true
+		else
+			puts "Draw rejected."
+			opponent.draw = false
+		end
+	end
+
+
 	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
-		moves = []
+		moves = [] 
 
 		if (piece.name == "P")
 			case piece.color
@@ -318,7 +353,7 @@ class ChessGame
 	end
 
 
-	def check?(player)
+	def check?(player=@active)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
 			if ( piece.in_play? )

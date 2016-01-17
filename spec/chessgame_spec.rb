@@ -442,10 +442,8 @@ describe ChessGame do
 
 		context "#draw?" do
 			it "returns true if both players agree to draw" do
-				
-			end
-			it "returns false if player has moves" do
-				
+				game.players.each { |p| p.draw = true }
+				expect(game.draw?).to eq true
 			end
 		end		
 	end
