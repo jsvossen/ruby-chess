@@ -358,15 +358,40 @@ describe ChessGame do
 			brook[0].coord = game.board.square(3,7)
 		end
 		it "puts player in check if king is in danger" do
-			game.check_check(game.players[0])
+			expect(game.check_check(game.players[0])).to eq true
 			expect(game.players[0].in_check?).to eq true
 		end
 		it "takes player out of check if king is safe" do
-			game.move("K",4,3)
 			game.check_check(game.players[0])
+			game.move("K",4,3)
+			expect(game.check_check(game.players[0])).to eq false
 			expect(game.players[0].in_check?).to eq false
 		end
 
+	end
+
+	describe "#vulnerable_move?" do
+		before(:each) do
+			wking = game.players[0].set.select { |p| p.name == "K"}
+			wqueen = game.players[0].set.select { |p| p.name == "Q"}
+			brook = game.players[1].set.select { |p| p.name == "R"}
+			game.board.empty
+			wking[0].coord = game.board.square(3,3)
+			wqueen[0].coord = game.board.square(8,2)
+			brook[0].coord = game.board.square(3,7)
+		end
+		it "returns true if a move leaves king in danger" do
+			expect(game.vulnerable_move?(wking[0],3,2)).to eq true
+		end
+		it "returns false if a move keeps king safe" do
+			expect(game.vulnerable_move?(wking[0],2,3)).to eq false
+			expect(game.vulnerable_move?(wqueen[0],3,7)).to eq false
+		end
+		it "does not update board" do
+			game.vulnerable_move?(wqueen[0],3,7)
+			expect(wqueen[0].coord).to eq game.board.square(8,2)
+			expect(brook[0].coord).to eq game.board.square(3,7)
+		end
 	end
 
 end

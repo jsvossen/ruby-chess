@@ -250,6 +250,8 @@ class ChessGame
 			end
 		end
 
+		moves.select! { |m| !vulnerable_move?(piece,m[0],m[1]) } if piece.color == @active.color
+
 		if (ox == piece.coord.x && oy == piece.coord.y)
 			piece.moves = moves
 		else
@@ -294,10 +296,7 @@ class ChessGame
 			puts "Illegal move!"
 			return false
 		else
-			if (@board.square(x2,y2).occupant)
-				@board.square(x2,y2).occupant.captured = true
-				@board.square(x2,y2).occupant = nil
-			end
+			@board.square(x2,y2).occupant.captured = true if @board.square(x2,y2).occupant
 			movable[0].coord = @board.square(x2,y2)
 			if (movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
 				puts "#{@active.name}..."
@@ -307,6 +306,7 @@ class ChessGame
 		end
 	end
 
+
 	def check_check(player)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
@@ -314,12 +314,32 @@ class ChessGame
 				get_moves(piece)
 				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
 					player.check = true
+					return true
 					break
 				else
 					player.check = false
 				end
 			end
 		end
+		return false
+	end
+
+
+	#will hypothetical move leave king vulnerable?
+	def vulnerable_move?(piece,x,y)
+		ox, oy = piece.coord.x, piece.coord.y
+		dest = @board.square(x,y)
+		captive = dest.occupant
+		player = @players.select { |p| p.color == piece.color }
+
+		piece.coord = dest
+		vulnerable = check_check(player[0])
+
+		#reset
+		piece.coord = @board.square(ox,oy)
+		captive.coord = dest if captive
+
+		vulnerable
 	end
 
 
