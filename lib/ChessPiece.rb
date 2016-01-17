@@ -43,6 +43,10 @@ class ChessPiece
 		@coord.occupant = self if @coord && @coord.occupant != self
 	end
 
+	def in_play?
+		!@captured && @coord
+	end
+
 end
 
 class Pawn < ChessPiece

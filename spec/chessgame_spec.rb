@@ -398,11 +398,25 @@ describe ChessGame do
 	describe "#gameover" do
 
 		context "#checkmate?" do
+			before(:each) do
+				wking = game.players[0].set.select { |p| p.name == "K"}
+				bking = game.players[1].set.select { |p| p.name == "K"}
+				bbish = game.players[1].set.select { |p| p.name == "B"}
+				game.board.empty
+				wking[0].coord = game.board.square(8,1)
+				bking[0].coord = game.board.square(8,3)
+				bbish[0].coord = game.board.square(6,3)
+				bbish[1].coord = game.board.square(5,3)
+			end
 			it "returns true if player is in check and has no moves" do
-				
+				expect(game.check_check(game.players[0])).to eq true
+				expect(game.players[0].set.select { |p| p.in_play? && !game.get_moves(p).empty? }).to eq []
+				expect(game.checkmate?).to eq true
 			end
 			it "returns false if player has moves" do
-				
+				bbish[1].coord = nil
+				expect(game.check_check(game.players[0])).to eq true
+				expect(game.checkmate?).to eq false
 			end
 		end
 

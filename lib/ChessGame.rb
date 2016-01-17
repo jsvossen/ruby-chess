@@ -154,8 +154,17 @@ class ChessGame
 	end
 
 	def gameover?
+		checkmate? || stalemate? || draw?
 	end
 
+	def checkmate?(player=@active)
+		in_play = player.set.select { |p| p.in_play? }
+		player.in_check? && in_play.all? { |p| get_moves(p).empty?  }
+	end
+
+	def stalemate?(player=@active)
+		
+	end
 
 	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
 		moves = []
@@ -312,7 +321,7 @@ class ChessGame
 	def check_check(player)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
-			if ( !piece.captured && piece.coord )
+			if ( piece.in_play? )
 				get_moves(piece)
 				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
 					player.check = true
