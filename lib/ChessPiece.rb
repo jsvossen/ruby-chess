@@ -36,6 +36,7 @@ class ChessPiece
 		@captured = false
 	end
 
+	#piece coordinates and square occupant are synched
 	def coord= coord
 		prev = @coord
 		@coord = coord
@@ -50,8 +51,6 @@ class ChessPiece
 end
 
 class Pawn < ChessPiece
-
-	attr_accessor :name
 
 	def initialize(color)
 		super(color)

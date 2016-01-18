@@ -1,6 +1,6 @@
 class ChessPlayer
 
-	attr_accessor :name, :color, :set, :check, :draw
+	attr_accessor :name, :color, :set, :draw
 
 	def initialize(name,color)
 		@name = name

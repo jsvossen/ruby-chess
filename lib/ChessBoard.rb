@@ -1,3 +1,9 @@
+begin
+   require 'Win32/Console/ANSI' if RUBY_PLATFORM =~ /win32/
+rescue LoadError
+   raise 'You must gem install win32console to use color on Windows'
+end
+
 class ChessBoard
 
 	attr_reader :squares
@@ -16,11 +22,13 @@ class ChessBoard
 		end
 	end
 
+	#get square by coordinates
 	def square(x,y)
 		char = CHAR_RANGE[x.to_i-1]
 		@squares["#{char}#{y}".to_sym]
 	end
 
+	#draw board with shaded squares; requires win32console gem on windows
 	def draw
 		puts "    a  b  c  d  e  f  g  h"
 		puts "  |------------------------|"
@@ -36,6 +44,7 @@ class ChessBoard
 		puts "    a  b  c  d  e  f  g  h"
 	end
 
+	#draw board with with acsii characters
 	def line_draw
 		puts "    a   b   c   d   e   f   g   h"
 		puts "  |-------------------------------|"
@@ -58,11 +67,13 @@ class ChessBoard
 		puts "    a   b   c   d   e   f   g   h"
 	end
 
+	#empty board of all pieces
 	def empty
 		@squares.each do |label, sq|
 			sq.occupant = nil
 		end
 	end
+
 
 	class Square
 
@@ -74,6 +85,7 @@ class ChessBoard
 			@occupant = nil
 		end
 
+		#square occupant and piece coordinates are synched
 		def occupant= piece
 			prev = @occupant
 			@occupant = piece

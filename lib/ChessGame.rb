@@ -93,7 +93,7 @@ class ChessGame
 		@players[@players.index(player)-1]
 	end
 
-
+	#main gameplay loop
 	def play
 		board.draw
 		until gameover? do
@@ -116,7 +116,7 @@ class ChessGame
 		puts "#{@winner.name} wins!" if @winner
 	end
 
-
+	#process possible user input
 	def handle_input(input)
 		case input.downcase
 			when "save", /^save\s\w+$/
@@ -125,7 +125,7 @@ class ChessGame
 				return false
 
 			when "show saves"
-				puts "***Saved Games***"
+				puts "\n***Saved Games***"
 				FileManager.list_saves
 				puts "***End***"
 				return false
@@ -169,13 +169,13 @@ class ChessGame
 		checkmate? || stalemate? || draw? || @winner
 	end
 
-
+	#player is in check and all active pieces have no moves
 	def checkmate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		check?(player) && in_play.all? { |p| get_moves(p).empty?  }
 	end
 
-
+	#player is not in check but all active pieces have no moves
 	def stalemate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		in_play.all? { |p| get_moves(p).empty? } && !check?(player)
@@ -204,6 +204,7 @@ class ChessGame
 	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
 		moves = [] 
 
+		#pawn
 		if (piece.name == "P")
 			case piece.color
 				when :white
@@ -217,7 +218,8 @@ class ChessGame
 					diags = [[ox-1, oy-1], [ox+1, oy-1]]
 					diags.each { |d| moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :white }
 			end
-						
+		
+		#knight				
 		elsif (piece.name == "N")
 			next_sq = [
 				[ox-2, oy+1],
@@ -231,6 +233,7 @@ class ChessGame
 			]
 			next_sq.each { |sq|  moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }		
 
+		#king
 		elsif (piece.name == "K")
 			next_sq = [
 				[ox+1, oy],
@@ -245,6 +248,8 @@ class ChessGame
 			next_sq.each { |sq|  moves << sq if sq[0].between?(1,8) && sq[1].between?(1,8) && @board.square(sq[0],sq[1]).alignment != piece.color }
 
 		else
+
+			#orthagonal moves (rook or queen)
 			if (piece.name == "R" || piece.name == "Q")
 				(ox+1).upto(8) do |nx|
 					moves << [nx,oy] if @board.square(nx,oy).alignment != piece.color
@@ -264,6 +269,7 @@ class ChessGame
 				end
 			end
 
+			#diagonal moves (bishop or queen)
 			if (piece.name == "B" || piece.name == "Q")
 				nx, ny = ox, oy
 				while nx < 8 && ny < 8 do
@@ -296,6 +302,7 @@ class ChessGame
 			end
 		end
 
+		#prevent active player from moving into check
 		moves.select! { |m| !vulnerable_move?(piece,m[0],m[1]) } if piece.color == @active.color
 
 		if (ox == piece.coord.x && oy == piece.coord.y)
@@ -308,15 +315,15 @@ class ChessGame
 
 
 	def decode_move(input)
-		input = input.tr("x","").split(//)
+		input = input.tr("x","").split(//) #capture notation "x" is optional
 		move = {}
 		move[:piece] = input.shift.upcase
 		move[:x1] = nil
 		move[:y1] = nil
-		if ( input.length == 4 )
+		if ( input.length == 4 ) #e.g. g1f3
 			move[:x1] = ChessBoard::CHAR_RANGE.index(input.shift.downcase)+1
 			move[:y1] = input.shift.to_i
-		elsif ( input.length == 3 )
+		elsif ( input.length == 3 )  #e.g. gf3
 			if input[0].to_i > 0
 				move[:y1] = input.shift.to_i
 			else
@@ -330,11 +337,11 @@ class ChessGame
 
 
 	def move(piece,x2,y2,x1=nil,y1=nil)
-		movable = @active.set.select { |p| p.name == piece && !p.captured }
-		movable.each { |p| get_moves(p) }
-		movable.select! { |p| p.moves.include?([x2,y2]) }
-		movable.select! { |p| p.coord.x == x1 } if x1
-		movable.select! { |p| p.coord.y == y1 } if y1
+		movable = @active.set.select { |p| p.name == piece && !p.captured } #get pieces that haven't been captured
+		movable.each { |p| get_moves(p) } #see what moves each piece has
+		movable.select! { |p| p.moves.include?([x2,y2]) } #select pieces that include designated coordinates
+		movable.select! { |p| p.coord.x == x1 } if x1 #disambiguate if file given
+		movable.select! { |p| p.coord.y == y1 } if y1 #disambiguate if rank given
 		if ( movable.size > 1 )
 			puts "Ambiguous command! Multiple #{ChessPiece::CODEX[piece.upcase]}s can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
 			return false
@@ -342,8 +349,9 @@ class ChessGame
 			puts "Illegal move!"
 			return false
 		else
-			@board.square(x2,y2).occupant.captured = true if @board.square(x2,y2).occupant
-			movable[0].coord = @board.square(x2,y2)
+			@board.square(x2,y2).occupant.captured = true if @board.square(x2,y2).occupant #capture piece if destination is occupied
+			movable[0].coord = @board.square(x2,y2) #move the piece
+			#promote pawn as appropriate
 			if (movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
 				puts "#{@active.name}..."
 				movable[0].promote
@@ -352,7 +360,7 @@ class ChessGame
 		end
 	end
 
-
+	#player is in check if any opponent piece can move to the king's coordinates
 	def check?(player=@active)
 		king = player.set.select { |p| p.name == "K"}
 		opponent(player).set.each do |piece|
@@ -378,7 +386,7 @@ class ChessGame
 		piece.coord = dest
 		vulnerable = check?(player[0])
 
-		#reset
+		#reset hypothetical move
 		piece.coord = @board.square(ox,oy)
 		captive.coord = dest if captive
 
