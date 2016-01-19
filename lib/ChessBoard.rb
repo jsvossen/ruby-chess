@@ -1,7 +1,9 @@
+#check if system can output colored squares
 begin
    require 'Win32/Console/ANSI' if RUBY_PLATFORM =~ /win32/
 rescue LoadError
-   raise 'You must gem install win32console to use color on Windows'
+   puts "Gem win32console not found. Chessboard will be set to safe mode."
+   $safe_mode = true
 end
 
 class ChessBoard
@@ -12,6 +14,7 @@ class ChessBoard
 	BOARD_SIZE = 8
 
 	def initialize
+
 		@squares = {}
 		BOARD_SIZE.times do |x|
 			char = CHAR_RANGE[x]
@@ -28,8 +31,12 @@ class ChessBoard
 		@squares["#{char}#{y}".to_sym]
 	end
 
-	#draw board with shaded squares; requires win32console gem on windows
 	def draw
+		$safe_mode ? line_draw : shade_draw
+	end
+
+	#draw board with shaded squares; requires win32console gem on windows
+	def shade_draw
 		puts "    a  b  c  d  e  f  g  h"
 		puts "  |------------------------|"
 		puts "8 | #{square(1,8).mark} \e[47m #{square(2,8).mark} \e[0m #{square(3,8).mark} \e[47m #{square(4,8).mark} \e[0m #{square(5,8).mark} \e[47m #{square(6,8).mark} \e[0m #{square(7,8).mark} \e[47m #{square(8,8).mark} \e[0m| 8"
