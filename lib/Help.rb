@@ -126,7 +126,7 @@ module Help
 		puts "[save <name>] create new save or overwrites <name> if it exists; save names may not include spaces"
 		puts "[show saves] list existing save files"
 		puts "[help] show help menu"
-		puts "[quit] or [exit] exit game; abandon unsaved progress"
+		puts "[quit] or [exit] exit program; abandon unsaved progress"
 		puts "*** End ***"
 		puts "[back] previous menu"
 		puts "[close] return to game"

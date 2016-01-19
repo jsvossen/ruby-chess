@@ -10,7 +10,7 @@ module FileManager
 		Dir.mkdir(DIR) unless Dir.exists? DIR
 
 		if !filename
-			recent = get_saves_by_date[0]
+			recent = get_last_accessed[0]
 			if !recent
 				filename = "game#{Time.now.strftime("%Y%m%d")}"
 			else
@@ -25,12 +25,22 @@ module FileManager
 		puts is_new ? "New save '#{filename}' created!" : "#{filename} saved!"
 	end
 
+	def load
+		puts "*** Enter a game to load: ***"
+		list_saves
+		puts "[back] to cancel"
+		input = Readline.readline("load: ")
+		return false if input == "back"
+		load_game(input)
+	end
+
 	def load_game(filename)
 		file_path = "#{DIR}/#{filename}#{EXT}"
 		if File.exists?(file_path)
 			save = YAML.load_file(file_path)
 		else
-			puts "Saved game '#{filename}' does not exist"
+			puts "\nSaved game '#{filename}' does not exist"
+			return false
 		end
 	end
 
@@ -39,12 +49,21 @@ module FileManager
 		files.sort_by! {|f| File.mtime("#{DIR}/"+f)}.reverse!
 	end
 
+	def get_last_accessed
+		files = Dir.entries(DIR).select {|f| File.extname(f) == EXT}
+		files.sort_by! {|f| File.atime("#{DIR}/"+f)}.reverse!
+	end
+
 	def list_saves
 		saves = get_saves_by_date
 		if saves == []
 			puts "No saves found."
+			return false
 		else
 			saves.each { |f| puts File.basename(f,EXT) + " " +File.mtime("#{DIR}/"+f).strftime("(%Y-%m-%d %H:%M:%S)") }
+			# saves = get_last_accessed
+			# puts "Last Accessed: "
+			# saves.each { |f| puts File.basename(f,EXT) + " " +File.atime("#{DIR}/"+f).strftime("(%Y-%m-%d %H:%M:%S)") }
 		end
 	end
 
