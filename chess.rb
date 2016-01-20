@@ -12,7 +12,7 @@ puts "[_____] [_____] [_____] [_____] [_____] [___]"
 puts "   ___       __          _______              "
 puts "  / _ \\__ __/ /  __ __  / ___/ /  ___ ___ ___"
 puts " / , _/ // / _ \\/ // / / /__/ _ \\/ -_|_-<(_-<"
-puts "/_/|_|\\_,_/_.__/\\_, /  \\___/_//_/\\__/___/___/"
+puts "/_/|_|\\_._/_.__/\\_, /  \\___/_//_/\\__/___/___/"
 puts "               /___/                         "
 
 def welcome
@@ -20,6 +20,7 @@ def welcome
   puts "\n[new] start a new game"
   puts "[load] load a saved game"
   puts "[help] command list"
+  puts "[quit] quit program"
   input = Readline.readline(">: ").downcase
     until handle_input(input) do
       input = Readline.readline(">: ").downcase
@@ -32,9 +33,6 @@ def handle_input(input)
     when "help"
       Help.help
       welcome
-
-    when "exit", "quit"
-      exit
 
     when "load"
       game = FileManager.load

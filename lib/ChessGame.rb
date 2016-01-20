@@ -101,11 +101,19 @@ class ChessGame
 			until handle_input(input) do
 				input = Readline.readline("#{@active.name}: ")
 			end
-			board.draw
+
+			break if input.downcase == "exit"
+			board.draw if input.downcase != "resign"
+
 			@active = opponent
 			puts "#{@active.name} is in check!" if check? && !checkmate?
 			request_draw if opponent.draw
 		end
+		print_results
+	end
+
+
+	def print_results
 		if checkmate?
 			puts "Checkmate!"
 			@winner = opponent
@@ -115,6 +123,7 @@ class ChessGame
 		end
 		puts "#{@winner.name} wins!" if @winner
 	end
+
 
 	#process possible user input
 	def handle_input(input)
@@ -148,9 +157,17 @@ class ChessGame
 				@board.draw
 				return false
 
-			when "quit", "exit"
+			when "exit"
+				puts "Exiting game..."
+				return true
+
+			when "quit"
 				puts "Goodbye!"
 				exit
+
+			when "get ye flask"
+				puts "You cannot get ye flask."
+				return false
 
 			else
 				puts "Invalid input. Enter [help] for commands."
@@ -314,6 +331,7 @@ class ChessGame
 	end
 
 
+	#process chess notation
 	def decode_move(input)
 		input = input.tr("x","").split(//) #capture notation "x" is optional
 		move = {}
@@ -376,7 +394,7 @@ class ChessGame
 	end
 
 
-	#will hypothetical move leave king vulnerable?
+	#will hypothetical move of piece to (x,y) leave king vulnerable?
 	def vulnerable_move?(piece,x,y)
 		ox, oy = piece.coord.x, piece.coord.y
 		dest = @board.square(x,y)
