@@ -29,10 +29,8 @@ end
 
 def handle_input(input)
   case input
-
     when "help"
       Help.help
-      welcome
 
     when "load"
       game = FileManager.load
@@ -46,7 +44,6 @@ def handle_input(input)
     when "new"
       game = ChessGame.new
       game.play
-      welcome
 
     when "quit", "exit"
         puts "Goodbye!"
@@ -55,8 +52,8 @@ def handle_input(input)
     else
       puts "Invalid input. Enter [help] for commands."
       return false
-
   end
+  welcome
 end
 
 welcome

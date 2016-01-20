@@ -386,7 +386,6 @@ class ChessGame
 				get_moves(piece)
 				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
 					return true
-					break
 				end
 			end
 		end

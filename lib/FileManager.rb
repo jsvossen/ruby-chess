@@ -37,7 +37,7 @@ module FileManager
 	def load_game(filename)
 		file_path = "#{DIR}/#{filename}#{EXT}"
 		if File.exists?(file_path)
-			save = YAML.load_file(file_path)
+			YAML.load_file(file_path)
 		else
 			puts "\nSaved game '#{filename}' does not exist"
 			return false
