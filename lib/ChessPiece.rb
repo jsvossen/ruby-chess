@@ -104,10 +104,13 @@ end
 
 class Rook < ChessPiece
 
+	attr_accessor :castle
+
 	def initialize(color)
 		super(color)
 		@name = "R"
 		@color == :white ? @symbol = SYM[:wrook] : @symbol = SYM[:brook]
+		@castle = true
 	end
 
 end
@@ -124,10 +127,13 @@ end
 
 class King < ChessPiece
 
+	attr_accessor :castle
+
 	def initialize(color)
 		super(color)
 		@name = "K"
 		@color == :white ? @symbol = SYM[:wking] : @symbol = SYM[:bking]
+		@castle = true
 	end
 
 end

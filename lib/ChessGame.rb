@@ -143,6 +143,9 @@ class ChessGame
 				m = decode_move(input)
 				move(m[:piece],m[:x2],m[:y2],m[:x1],m[:y1])
 
+			when "O-O"
+				castle_ks
+
 			when "resign"
 				resign(@active)
 				return true
@@ -218,8 +221,12 @@ class ChessGame
 	end
 
 
-	def get_moves(piece,ox=piece.coord.x, oy=piece.coord.y)
+	def get_moves(piece,ox=nil, oy=nil)
 		moves = [] 
+
+		return moves if !piece.coord && !ox && !oy
+		ox = piece.coord.x if !ox
+		oy = piece.coord.y if !oy
 
 		#pawn
 		if (piece.name == "P")
@@ -374,17 +381,18 @@ class ChessGame
 				puts "#{@active.name}..."
 				movable[0].promote
 			end
+			movable[0].castle = false if movable[0].class.to_s == "King" || movable[0].class.to_s == "Rook"
 			return true
 		end
 	end
 
 	#player is in check if any opponent piece can move to the king's coordinates
 	def check?(player=@active)
-		king = player.set.select { |p| p.name == "K"}
+		king = player.set.select { |p| p.name == "K"}.first
 		opponent(player).set.each do |piece|
 			if ( piece.in_play? )
 				get_moves(piece)
-				if (piece.moves.include? [king[0].coord.x, king[0].coord.y])
+				if (piece.moves.include? [king.coord.x, king.coord.y])
 					return true
 				end
 			end
@@ -408,6 +416,28 @@ class ChessGame
 		captive.coord = dest if captive
 
 		vulnerable
+	end
+
+	#castle kingside
+	def castle_ks(player=@active)
+		king = player.set.select { |p| p.name == "K" && p.castle }.first
+		rook = player.set.select { |p| p.name == "R" && p.castle && p.in_play? && p.coord.x == 8 }.first
+		if (check?(player) || !king || !rook)
+			puts "Illegal move!"
+			return false
+		end
+		y = king.coord.y
+		path = [[7,y], [6,y]]
+		if (path.any? { |sq| vulnerable_move?(king,sq[0],sq[1]) || @board.square(sq[0],sq[1]).occupant })
+			puts "Illegal move!"
+			return false
+		else
+			king.coord = @board.square(7,y)
+			rook.coord = @board.square(6,y)
+			king.castle = false
+			rook.castle = false
+			return true
+		end
 	end
 
 
