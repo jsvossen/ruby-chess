@@ -452,24 +452,26 @@ describe ChessGame do
 	describe "#castle_ks" do
 		before(:each) do
 			wking = game.players[0].set.select { |p| p.name == "K"}.first
-			wrook = game.players[0].set.select { |p| p.name == "R"}.first
+			wrook = game.players[0].set.select { |p| p.name == "R"}
 			bqueen = game.players[1].set.select { |p| p.name == "Q"}.first
 			game.board.empty
 			wking.coord = game.board.square(5,1)
-			wrook.coord = game.board.square(8,1)
+			wrook[0].coord = game.board.square(8,1)
+			wrook[1].coord = game.board.square(1,1)
 			bqueen.coord = game.board.square(4,8)
 		end
 		it "moves king and rook if castling is allowed" do
 			expect(game.castle_ks).to eq true
 			expect(wking.coord).to eq game.board.square(7,1)
-			expect(wrook.coord).to eq game.board.square(6,1)
+			expect(wrook[0].coord).to eq game.board.square(6,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
 		end
 		it "rejects castle if king is in check" do
 			bqueen.coord = game.board.square(5,8)
 			expect(game).to receive(:puts).with("Illegal move!")
 			expect(game.castle_ks).to eq false
 			expect(wking.coord).to eq game.board.square(5,1)
-			expect(wrook.coord).to eq game.board.square(8,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
 		end
 		it "rejects castle if king has moved previously" do
 			game.move("K",5,2)
@@ -477,7 +479,7 @@ describe ChessGame do
 			expect(game).to receive(:puts).with("Illegal move!")
 			expect(game.castle_ks).to eq false
 			expect(wking.coord).to eq game.board.square(5,1)
-			expect(wrook.coord).to eq game.board.square(8,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
 		end
 		it "rejects castle if rook has moved previously" do
 			game.move("R",8,2)
@@ -485,21 +487,77 @@ describe ChessGame do
 			expect(game).to receive(:puts).with("Illegal move!")
 			expect(game.castle_ks).to eq false
 			expect(wking.coord).to eq game.board.square(5,1)
-			expect(wrook.coord).to eq game.board.square(8,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
 		end
 		it "rejects castle if king would pass through vulnerable squares" do
 			bqueen.coord = game.board.square(6,8)
 			expect(game).to receive(:puts).with("Illegal move!")
 			expect(game.castle_ks).to eq false
 			expect(wking.coord).to eq game.board.square(5,1)
-			expect(wrook.coord).to eq game.board.square(8,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
 		end
 		it "rejects castle if squares between king and rook are occupied" do
 			Pawn.new(:white).coord = game.board.square(7,1)
 			expect(game).to receive(:puts).with("Illegal move!")
 			expect(game.castle_ks).to eq false
 			expect(wking.coord).to eq game.board.square(5,1)
-			expect(wrook.coord).to eq game.board.square(8,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
+		end
+	end
+
+	describe "#castle_qs" do
+		before(:each) do
+			wking = game.players[0].set.select { |p| p.name == "K"}.first
+			wrook = game.players[0].set.select { |p| p.name == "R"}
+			bqueen = game.players[1].set.select { |p| p.name == "Q"}.first
+			game.board.empty
+			wking.coord = game.board.square(5,1)
+			wrook[0].coord = game.board.square(8,1)
+			wrook[1].coord = game.board.square(1,1)
+			bqueen.coord = game.board.square(6,8)
+		end
+		it "moves king and rook if castling is allowed" do
+			expect(game.castle_qs).to eq true
+			expect(wking.coord).to eq game.board.square(3,1)
+			expect(wrook[1].coord).to eq game.board.square(4,1)
+			expect(wrook[0].coord).to eq game.board.square(8,1)
+		end
+		it "rejects castle if king is in check" do
+			bqueen.coord = game.board.square(5,8)
+			expect(game).to receive(:puts).with("Illegal move!")
+			expect(game.castle_qs).to eq false
+			expect(wking.coord).to eq game.board.square(5,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
+		end
+		it "rejects castle if king has moved previously" do
+			game.move("K",5,2)
+			game.move("K",5,1)
+			expect(game).to receive(:puts).with("Illegal move!")
+			expect(game.castle_qs).to eq false
+			expect(wking.coord).to eq game.board.square(5,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
+		end
+		it "rejects castle if rook has moved previously" do
+			game.move("R",1,2)
+			game.move("R",1,1)
+			expect(game).to receive(:puts).with("Illegal move!")
+			expect(game.castle_qs).to eq false
+			expect(wking.coord).to eq game.board.square(5,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
+		end
+		it "rejects castle if king would pass through vulnerable squares" do
+			bqueen.coord = game.board.square(4,8)
+			expect(game).to receive(:puts).with("Illegal move!")
+			expect(game.castle_qs).to eq false
+			expect(wking.coord).to eq game.board.square(5,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
+		end
+		it "rejects castle if squares between king and rook are occupied" do
+			Pawn.new(:white).coord = game.board.square(2,1)
+			expect(game).to receive(:puts).with("Illegal move!")
+			expect(game.castle_qs).to eq false
+			expect(wking.coord).to eq game.board.square(5,1)
+			expect(wrook[1].coord).to eq game.board.square(1,1)
 		end
 	end
 

@@ -143,8 +143,11 @@ class ChessGame
 				m = decode_move(input)
 				move(m[:piece],m[:x2],m[:y2],m[:x1],m[:y1])
 
-			when "O-O"
+			when "o-o", "0-0"
 				castle_ks
+
+			when "o-o-o", "0-0-0"
+				castle_qs
 
 			when "resign"
 				resign(@active)
@@ -434,6 +437,28 @@ class ChessGame
 		else
 			king.coord = @board.square(7,y)
 			rook.coord = @board.square(6,y)
+			king.castle = false
+			rook.castle = false
+			return true
+		end
+	end
+
+	#castle queenside
+	def castle_qs(player=@active)
+		king = player.set.select { |p| p.name == "K" && p.castle }.first
+		rook = player.set.select { |p| p.name == "R" && p.castle && p.in_play? && p.coord.x == 1 }.first
+		if (check?(player) || !king || !rook)
+			puts "Illegal move!"
+			return false
+		end
+		y = king.coord.y
+		path = [[2,y], [3,y], [4,y]]
+		if (path.any? { |sq| @board.square(sq[0],sq[1]).occupant } || path[1..-1].any? { |sq| vulnerable_move?(king,sq[0],sq[1]) })
+			puts "Illegal move!"
+			return false
+		else
+			king.coord = @board.square(3,y)
+			rook.coord = @board.square(4,y)
 			king.castle = false
 			rook.castle = false
 			return true

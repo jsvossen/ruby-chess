@@ -54,9 +54,10 @@ module Help
 
 	def special_commands
 		puts "\n*** Special Commands ***"
+		puts "[O-O] castle kingside"
+		puts "[O-O-O] castle queenside"
 		puts "[draw] request a draw; the player who proposes the draw makes one more move, \nthen the opponent may either agree to the draw or reject it to continue play."
 		puts "[resign] concede the game"
-		puts "Castling is not available at this time."
 		puts "*** End ***"
 		puts "[back] back to menu"
 		puts "[close] return to game"
