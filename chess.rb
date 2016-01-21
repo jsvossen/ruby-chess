@@ -17,7 +17,7 @@ puts "               /___/                         "
 
 def welcome
   puts "\n**** Welcome to Ruby Chess! ****"
-  puts "\n[new] start a new game"
+  puts "\n[new]  start a new game"
   puts "[load] load a saved game"
   puts "[help] command list"
   puts "[quit] quit program"

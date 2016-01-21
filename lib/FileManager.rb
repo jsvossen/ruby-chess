@@ -26,12 +26,17 @@ module FileManager
 	end
 
 	def load
-		puts "*** Enter a game to load: ***"
-		list_saves
-		puts "[back] to cancel"
-		input = Readline.readline("load: ")
-		return false if input == "back"
-		load_game(input)
+		if !get_saves_by_date.empty?
+			puts "\n*** Enter a game to load: ***"
+			list_saves
+			puts "[back] to cancel"
+			input = Readline.readline("load: ")
+			return false if input == "back"
+			load_game(input)
+		else
+			puts "\nNo saves found."
+			return false
+		end
 	end
 
 	def load_game(filename)
@@ -39,7 +44,7 @@ module FileManager
 		if File.exists?(file_path)
 			YAML.load_file(file_path)
 		else
-			puts "\nSaved game '#{filename}' does not exist"
+			puts "\nSaved game '#{filename}' does not exist."
 			return false
 		end
 	end

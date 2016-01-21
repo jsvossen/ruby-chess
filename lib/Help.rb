@@ -54,10 +54,10 @@ module Help
 
 	def special_commands
 		puts "\n*** Special Commands ***"
-		puts "[O-O] castle kingside"
-		puts "[O-O-O] castle queenside"
-		puts "[draw] request a draw; the player who proposes the draw makes one more move, \nthen the opponent may either agree to the draw or reject it to continue play."
+		puts "[O-O]    castle kingside"
+		puts "[O-O-O]  castle queenside"
 		puts "[resign] concede the game"
+		puts "[draw]   request a draw; the player who proposes the draw makes one more move, \nthen the opponent may either agree to the draw or reject it to continue play."
 		puts "*** End ***"
 		puts "[back] back to menu"
 		puts "[close] return to game"
@@ -71,7 +71,7 @@ module Help
 
 	def start_game_commands
 		puts "\n*** Starting a Game ***"
-		puts "[new] start a new game"
+		puts "[new]  start a new game"
 		puts "[load] show save list to select a game to load"
 		puts "[load <name>] load game file <name>"
 		puts "Games can only be started/loaded from the welcome screen."
@@ -89,8 +89,8 @@ module Help
 	def saving_commands
 		puts "\n*** Saving a Game ***"
 		puts "[save] save over game that was most recently saved or loaded"
-		puts "[save <name>] create new save or overwrites <name> if it exists; save names may not include spaces"
-		puts "[show saves] list existing save files"
+		puts "[save <name>] create new save or overwrites <name> if it exists"
+		puts "[show saves]  list existing save files"
 		puts "Saving is only available in-game."
 		puts "*** End ***"
 		puts "[back] back to menu"
