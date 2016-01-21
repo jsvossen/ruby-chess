@@ -52,6 +52,8 @@ end
 
 class Pawn < ChessPiece
 
+	attr_accessor :passant_offensive, :passant_defensive
+
 	def initialize(color)
 		super(color)
 		demote
@@ -60,6 +62,8 @@ class Pawn < ChessPiece
 	def demote
 		@name = "P"
 		@color == :white ? @symbol = SYM[:wpawn] : @symbol = SYM[:bpawn]
+		@passant_offensive = false #can pawn perform en passant capture
+		@passant_defensive = false #is pawn vulnerable to en passant capture
 	end
 
 	def promote

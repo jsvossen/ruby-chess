@@ -561,4 +561,58 @@ describe ChessGame do
 		end
 	end
 
+
+	describe "#en_passant" do
+		before(:each) do
+			wpawn = game.board.square(1,2).occupant
+			bpawn = game.board.square(2,7).occupant
+			bpawn.coord = game.board.square(2,4)
+		end
+		it "has en passant available if pawn is ajacent to enemy pawn that opened with double step" do
+			game.move("P",1,4)
+			game.active = game.players[1]
+			game.get_moves(bpawn)
+			expect(wpawn.passant_defensive).to eq true
+			expect(bpawn.passant_offensive).to eq true
+			expect(bpawn.moves.include? [1,3]).to eq true
+		end
+		it "captures ajacent enemy pawn with diagonal move" do
+			game.move("P",1,4)
+			game.active = game.players[1]
+			game.move("P",1,3)
+			expect(wpawn.captured).to eq true
+			expect(bpawn.coord).to eq game.board.square(1,3)
+		end
+		it "cannot execute en passant if enemy pawn opens with single step" do
+			game.move("P",1,3)
+			game.move("P",1,4)
+			game.active = game.players[1]
+			game.get_moves(bpawn)
+			expect(wpawn.passant_defensive).to eq false
+			expect(bpawn.passant_offensive).to eq false
+			expect(bpawn.moves.include? [1,3]).to eq false
+		end
+
+		it "forfeits en passant if not executed" do
+			game.move("P",1,4)
+			game.active = game.players[1]
+			game.move("P",8,5)
+			game.active = game.players[0]
+			game.move("P",8,4)
+			game.active = game.players[1]
+			game.get_moves(bpawn)
+			expect(wpawn.passant_defensive).to eq false
+			expect(bpawn.passant_offensive).to eq false
+			expect(bpawn.moves.include? [1,3]).to eq false
+		end
+		it "cannot execute en passant on piece other than pawn" do
+			game.board.square(5,2).occupant.coord = nil
+			game.move("B",3,4)
+			game.active = game.players[1]
+			game.get_moves(bpawn)
+			expect(bpawn.passant_offensive).to eq false
+			expect(bpawn.moves.include? [3,3]).to eq false
+		end
+	end
+
 end

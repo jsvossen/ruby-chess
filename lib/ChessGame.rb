@@ -245,7 +245,8 @@ class ChessGame
 					diags = [[ox-1, oy-1], [ox+1, oy-1]]
 					diags.each { |d| moves << d if d[0].between?(1,8) && d[1].between?(1,8) && @board.square(d[0],d[1]).alignment == :white }
 			end
-		
+			en_passant(piece, ox, oy).each { |m| moves << m }
+	 	
 		#knight				
 		elsif (piece.name == "N")
 			next_sq = [
@@ -341,6 +342,21 @@ class ChessGame
 	end
 
 
+	#enable en passant capture if pawn is ajacent to enemy pawn that has just opened with a double step
+	def en_passant(piece,x,y)
+		passant_moves = []
+		if piece.color == :white && y == 5
+			passant_moves << [x-1, y+1] if x-1 > 0 && @board.square(x-1, y).alignment == :black && @board.square(x-1, y).occupant.name == "P" && @board.square(x-1, y).occupant.passant_defensive && !@board.square(x-1, y+1).occupant
+			passant_moves << [x+1, y+1] if x+1 <= 8 && @board.square(x+1, y).alignment == :black && @board.square(x+1, y).occupant.name == "P" && @board.square(x+1, y).occupant.passant_defensive && !@board.square(x+1, y+1).occupant
+		elsif piece.color == :black && y == 4
+			passant_moves << [x-1, y-1] if x-1 > 0 && @board.square(x-1, y).alignment == :white && @board.square(x-1, y).occupant.name == "P" && @board.square(x-1, y).occupant.passant_defensive && !@board.square(x-1, y-1).occupant
+			passant_moves << [x+1, y-1] if x+1 <= 8 && @board.square(x+1, y).alignment == :white && @board.square(x+1, y).occupant.name == "P" && @board.square(x+1, y).occupant.passant_defensive && !@board.square(x+1, y-1).occupant
+		end
+		piece.passant_offensive = true if !passant_moves.empty? && piece.color == @active.color
+		passant_moves
+	end
+
+
 	#process chess notation
 	def decode_move(input)
 		input = input.tr("x","").split(//) #capture notation "x" is optional
@@ -377,17 +393,49 @@ class ChessGame
 			puts "Illegal move!"
 			return false
 		else
+			toggle_passant(movable[0],x2,y2) if movable[0].name == "P" #check for en passant
 			@board.square(x2,y2).occupant.captured = true if @board.square(x2,y2).occupant #capture piece if destination is occupied
 			movable[0].coord = @board.square(x2,y2) #move the piece
-			#promote pawn as appropriate
-			if (movable[0].name == "P" && ( (movable[0].color == :white && y2 == 8) || (movable[0].color == :black && y2 == 1) ) )
-				puts "#{@active.name}..."
-				movable[0].promote
-			end
-			movable[0].castle = false if movable[0].class.to_s == "King" || movable[0].class.to_s == "Rook"
+			promotion_check(movable[0]) if movable[0].name == "P" #check for pawn promotion
+			movable[0].castle = false if movable[0].class.to_s == "King" || movable[0].class.to_s == "Rook" #disallow castling if rook/king moved
 			return true
 		end
 	end
+
+	#promote pawn if it's reached opposite rank
+	def promotion_check(piece)
+		if ( (piece.color == :white && piece.coord.y == 8) || (piece.color == :black && piece.coord.y == 1) )
+			puts "#{@active.name}..."
+			piece.promote
+		end		
+	end
+
+
+	def toggle_passant(piece,x,y)
+		#execute en passant capture if able
+		if (piece.passant_offensive)
+			case x
+				when piece.coord.x+1
+					@board.square(x,piece.coord.y).occupant.captured = true
+					@board.square(x,piece.coord.y).occupant = nil
+				when piece.coord.x-1
+					@board.square(x,piece.coord.y).occupant.captured = true
+					@board.square(x,piece.coord.y).occupant = nil
+			end
+		else
+			#if piece's first move is two spaces, it's open to en passant attack
+			case piece.color
+				when :white
+					piece.passant_defensive = true if piece.coord.y == 2 && y == 4
+				when :black
+					piece.passant_defensive = true if piece.coord.y == 7 && y == 5 
+			end
+		end
+		#unexecuted en passant is forfiet on next move
+		pawns = opponent.set.select { |p| p.name == "P" && p.in_play? }
+		pawns.each { |p| p.passant_defensive = false; p.passant_offensive = false; }
+	end
+
 
 	#player is in check if any opponent piece can move to the king's coordinates
 	def check?(player=@active)
