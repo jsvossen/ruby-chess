@@ -568,7 +568,7 @@ describe ChessGame do
 			bpawn = game.board.square(2,7).occupant
 			bpawn.coord = game.board.square(2,4)
 		end
-		it "has en passant available if pawn is ajacent to enemy pawn that opened with double step" do
+		it "is available if pawn is ajacent to enemy pawn that opened with double step" do
 			game.move("P",1,4)
 			game.active = game.players[1]
 			game.get_moves(bpawn)
@@ -583,7 +583,7 @@ describe ChessGame do
 			expect(wpawn.captured).to eq true
 			expect(bpawn.coord).to eq game.board.square(1,3)
 		end
-		it "cannot execute en passant if enemy pawn opens with single step" do
+		it "unavailable if enemy pawn opens with single step" do
 			game.move("P",1,3)
 			game.move("P",1,4)
 			game.active = game.players[1]
@@ -593,7 +593,7 @@ describe ChessGame do
 			expect(bpawn.moves.include? [1,3]).to eq false
 		end
 
-		it "forfeits en passant if not executed" do
+		it "is forfeited if not executed" do
 			game.move("P",1,4)
 			game.active = game.players[1]
 			game.move("P",8,5)
@@ -605,7 +605,7 @@ describe ChessGame do
 			expect(bpawn.passant_offensive).to eq false
 			expect(bpawn.moves.include? [1,3]).to eq false
 		end
-		it "cannot execute en passant on piece other than pawn" do
+		it "cannot execute on piece other than pawn" do
 			game.board.square(5,2).occupant.coord = nil
 			game.move("B",3,4)
 			game.active = game.players[1]

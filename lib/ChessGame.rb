@@ -112,7 +112,7 @@ class ChessGame
 		print_results
 	end
 
-
+	#output endgame results
 	def print_results
 		if checkmate?
 			puts "Checkmate!"
@@ -125,7 +125,7 @@ class ChessGame
 	end
 
 
-	#process possible user input
+	#process possible user input; returns true only after a complete move
 	def handle_input(input)
 		case input.downcase
 			when "save", /^save\s\w+$/
@@ -224,6 +224,7 @@ class ChessGame
 	end
 
 
+	#get possible moves of piece from given origin (or piece's origin if ox,oy not specified)
 	def get_moves(piece,ox=nil, oy=nil)
 		moves = [] 
 
@@ -361,7 +362,7 @@ class ChessGame
 	def decode_move(input)
 		input = input.tr("x","").split(//) #capture notation "x" is optional
 		move = {}
-		move[:piece] = input.shift.upcase
+		move[:piece] = input.shift.upcase #first character is piece name
 		move[:x1] = nil
 		move[:y1] = nil
 		if ( input.length == 4 ) #e.g. g1f3
@@ -379,7 +380,7 @@ class ChessGame
 		move
 	end
 
-
+	#move piece from (x1,y1) to (x2,y2) according to game rules
 	def move(piece,x2,y2,x1=nil,y1=nil)
 		movable = @active.set.select { |p| p.name == piece && !p.captured } #get pieces that haven't been captured
 		movable.each { |p| get_moves(p) } #see what moves each piece has
@@ -389,7 +390,7 @@ class ChessGame
 		if ( movable.size > 1 )
 			puts "Ambiguous command! Multiple #{ChessPiece::CODEX[piece.upcase]}s can move to #{ChessBoard::CHAR_RANGE[x2-1]}#{y2}."
 			return false
-		elsif (movable.size == 0 )
+		elsif ( movable.size == 0 )
 			puts "Illegal move!"
 			return false
 		else
@@ -403,32 +404,32 @@ class ChessGame
 	end
 
 	#promote pawn if it's reached opposite rank
-	def promotion_check(piece)
-		if ( (piece.color == :white && piece.coord.y == 8) || (piece.color == :black && piece.coord.y == 1) )
+	def promotion_check(pawn)
+		if ( (pawn.color == :white && pawn.coord.y == 8) || (pawn.color == :black && pawn.coord.y == 1) )
 			puts "#{@active.name}..."
-			piece.promote
+			pawn.promote
 		end		
 	end
 
 
-	def toggle_passant(piece,x,y)
+	def toggle_passant(pawn,x,y)
 		#execute en passant capture if able
-		if (piece.passant_offensive)
+		if (pawn.passant_offensive)
 			case x
-				when piece.coord.x+1
-					@board.square(x,piece.coord.y).occupant.captured = true
-					@board.square(x,piece.coord.y).occupant = nil
-				when piece.coord.x-1
-					@board.square(x,piece.coord.y).occupant.captured = true
-					@board.square(x,piece.coord.y).occupant = nil
+				when pawn.coord.x+1
+					@board.square(x,pawn.coord.y).occupant.captured = true
+					@board.square(x,pawn.coord.y).occupant = nil
+				when pawn.coord.x-1
+					@board.square(x,pawn.coord.y).occupant.captured = true
+					@board.square(x,pawn.coord.y).occupant = nil
 			end
 		else
-			#if piece's first move is two spaces, it's open to en passant attack
-			case piece.color
+			#if pawn's first move is two spaces, it's open to en passant attack
+			case pawn.color
 				when :white
-					piece.passant_defensive = true if piece.coord.y == 2 && y == 4
+					pawn.passant_defensive = true if pawn.coord.y == 2 && y == 4
 				when :black
-					piece.passant_defensive = true if piece.coord.y == 7 && y == 5 
+					pawn.passant_defensive = true if pawn.coord.y == 7 && y == 5 
 			end
 		end
 		#unexecuted en passant is forfiet on next move
@@ -454,16 +455,16 @@ class ChessGame
 
 	#will hypothetical move of piece to (x,y) leave king vulnerable?
 	def vulnerable_move?(piece,x,y)
-		ox, oy = piece.coord.x, piece.coord.y
+		origin = piece.coord
 		dest = @board.square(x,y)
 		captive = dest.occupant
-		player = @players.select { |p| p.color == piece.color }
+		player = @players.select { |p| p.color == piece.color }.first
 
 		piece.coord = dest
-		vulnerable = check?(player[0])
+		vulnerable = check?(player)
 
 		#reset hypothetical move
-		piece.coord = @board.square(ox,oy)
+		piece.coord = origin
 		captive.coord = dest if captive
 
 		vulnerable
