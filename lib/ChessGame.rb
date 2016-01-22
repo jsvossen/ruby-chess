@@ -192,13 +192,13 @@ class ChessGame
 		checkmate? || stalemate? || draw? || @winner
 	end
 
-	#player is in check and all active pieces have no moves
+	#player is in check with no moves available
 	def checkmate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		check?(player) && in_play.all? { |p| get_moves(p).empty?  }
 	end
 
-	#player is not in check but all active pieces have no moves
+	#player is not in check but has no moves available
 	def stalemate?(player=@active)
 		in_play = player.set.select { |p| p.in_play? }
 		in_play.all? { |p| get_moves(p).empty? } && !check?(player)
@@ -343,7 +343,7 @@ class ChessGame
 	end
 
 
-	#enable en passant capture if pawn is ajacent to enemy pawn that has just opened with a double step
+	#enable en passant capture if pawn is adjacent to enemy pawn that has just opened with a double step
 	def en_passant(piece,x,y)
 		passant_moves = []
 		if piece.color == :white && y == 5
@@ -403,7 +403,7 @@ class ChessGame
 		end
 	end
 
-	#promote pawn if it's reached opposite rank
+	#promote pawn if it has reached opposite rank
 	def promotion_check(pawn)
 		if ( (pawn.color == :white && pawn.coord.y == 8) || (pawn.color == :black && pawn.coord.y == 1) )
 			puts "#{@active.name}..."

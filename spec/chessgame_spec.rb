@@ -351,11 +351,11 @@ describe ChessGame do
 
 	describe "#check?" do
 		before(:each) do
-			wking = game.players[0].set.select { |p| p.name == "K"}
-			brook = game.players[1].set.select { |p| p.name == "R"}
+			wking = game.players[0].set.select { |p| p.name == "K"}.first
+			brook = game.players[1].set.select { |p| p.name == "R"}.first
 			game.board.empty
-			wking[0].coord = game.board.square(3,3)
-			brook[0].coord = game.board.square(3,7)
+			wking.coord = game.board.square(3,3)
+			brook.coord = game.board.square(3,7)
 		end
 		it "puts player in check if king is in danger" do
 			expect(game.check?(game.players[0])).to eq true
@@ -370,25 +370,25 @@ describe ChessGame do
 
 	describe "#vulnerable_move?" do
 		before(:each) do
-			wking = game.players[0].set.select { |p| p.name == "K"}
-			wqueen = game.players[0].set.select { |p| p.name == "Q"}
-			brook = game.players[1].set.select { |p| p.name == "R"}
+			wking = game.players[0].set.select { |p| p.name == "K"}.first
+			wqueen = game.players[0].set.select { |p| p.name == "Q"}.first
+			brook = game.players[1].set.select { |p| p.name == "R"}.first
 			game.board.empty
-			wking[0].coord = game.board.square(3,3)
-			wqueen[0].coord = game.board.square(8,2)
-			brook[0].coord = game.board.square(3,7)
+			wking.coord = game.board.square(3,3)
+			wqueen.coord = game.board.square(8,2)
+			brook.coord = game.board.square(3,7)
 		end
 		it "returns true if a move leaves king in danger" do
-			expect(game.vulnerable_move?(wking[0],3,2)).to eq true
+			expect(game.vulnerable_move?(wking,3,2)).to eq true
 		end
 		it "returns false if a move keeps king safe" do
-			expect(game.vulnerable_move?(wking[0],2,3)).to eq false
-			expect(game.vulnerable_move?(wqueen[0],3,7)).to eq false
+			expect(game.vulnerable_move?(wking,2,3)).to eq false
+			expect(game.vulnerable_move?(wqueen,3,7)).to eq false
 		end
 		it "does not update board" do
 			game.vulnerable_move?(wqueen[0],3,7)
-			expect(wqueen[0].coord).to eq game.board.square(8,2)
-			expect(brook[0].coord).to eq game.board.square(3,7)
+			expect(wqueen.coord).to eq game.board.square(8,2)
+			expect(brook.coord).to eq game.board.square(3,7)
 		end
 	end
 
@@ -397,12 +397,12 @@ describe ChessGame do
 
 		context "#checkmate?" do
 			before(:each) do
-				wking = game.players[0].set.select { |p| p.name == "K"}
-				bking = game.players[1].set.select { |p| p.name == "K"}
+				wking = game.players[0].set.select { |p| p.name == "K"}.first
+				bking = game.players[1].set.select { |p| p.name == "K"}.first
 				bbish = game.players[1].set.select { |p| p.name == "B"}
 				game.board.empty
-				wking[0].coord = game.board.square(8,1)
-				bking[0].coord = game.board.square(8,3)
+				wking.coord = game.board.square(8,1)
+				bking.coord = game.board.square(8,3)
 				bbish[0].coord = game.board.square(6,3)
 				bbish[1].coord = game.board.square(5,3)
 			end
@@ -420,13 +420,13 @@ describe ChessGame do
 
 		context "#stalemate?" do
 			before(:each) do
-				wking = game.players[0].set.select { |p| p.name == "K"}
-				wqueen = game.players[0].set.select { |p| p.name == "Q"}
-				bking = game.players[1].set.select { |p| p.name == "K"}
+				wking = game.players[0].set.select { |p| p.name == "K"}.first
+				wqueen = game.players[0].set.select { |p| p.name == "Q"}.first
+				bking = game.players[1].set.select { |p| p.name == "K"}.first
 				game.board.empty
-				wking[0].coord = game.board.square(3,4)
-				wqueen[0].coord = game.board.square(3,6)
-				bking[0].coord = game.board.square(1,5)
+				wking.coord = game.board.square(3,4)
+				wqueen.coord = game.board.square(3,6)
+				bking.coord = game.board.square(1,5)
 				game.active = game.players[1]
 			end
 			it "returns true if player is not in check and has no moves" do
@@ -435,7 +435,7 @@ describe ChessGame do
 				expect(game.stalemate?).to eq true
 			end
 			it "returns false if player has moves" do
-				wqueen[0].coord = game.board.square(3,5)
+				wqueen.coord = game.board.square(3,5)
 				expect(game.stalemate?).to eq false
 		
 			end
@@ -568,7 +568,7 @@ describe ChessGame do
 			bpawn = game.board.square(2,7).occupant
 			bpawn.coord = game.board.square(2,4)
 		end
-		it "is available if pawn is ajacent to enemy pawn that opened with double step" do
+		it "is available if pawn is adjacent to enemy pawn that opened with double step" do
 			game.move("P",1,4)
 			game.active = game.players[1]
 			game.get_moves(bpawn)
@@ -576,7 +576,7 @@ describe ChessGame do
 			expect(bpawn.passant_offensive).to eq true
 			expect(bpawn.moves.include? [1,3]).to eq true
 		end
-		it "captures ajacent enemy pawn with diagonal move" do
+		it "captures adjacent enemy pawn with diagonal move" do
 			game.move("P",1,4)
 			game.active = game.players[1]
 			game.move("P",1,3)
