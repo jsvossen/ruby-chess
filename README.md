@@ -1,6 +1,6 @@
 #Ruby Chess
 
-This is a simple two-player command-line chess game implemented in Ruby as part of [The Odin Project's Ruby chapter](http://www.theodinproject.com/ruby-programming/ruby-final-project)
+This is a simple two-player command-line chess game implemented in Ruby as part of [The Odin Project's Ruby chapter](http://www.theodinproject.com/ruby-programming)
 
 To start the program run `$ ruby chess.rb` from the program's root directory.
 
@@ -8,7 +8,7 @@ To start the program run `$ ruby chess.rb` from the program's root directory.
 
 While it is not required, the **win32console** gem is recommended for Windows users, as the board uses background color to shade the squares.  Install the gem by running `$ gem install win32console`.
 
-If you wish to run the program without the gem, the game will switch to "safe mode" which will output a board that does not use background color.
+If you wish to run the program without the gem, the game will automatically switch to "safe mode" and output a board that does not use background color.
 
 ##Starting a Game
 
